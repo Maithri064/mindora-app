@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Write A Story & Community Reflections | Mindora{% endblock %}
+
+{% block content %}
+<div class="warm-page-container" style="padding-bottom: 70px;">
+    <!-- Hero Header -->
+    <header class="quiz-hero-header" style="max-width: 900px; margin: 36px auto 26px auto; text-align: center; padding: 0 20px;">
+        <span class="badge-mini" style="background: #FFE8D6; color: var(--orange-hover); margin-bottom: 8px;">EXPRESSIVE WRITING & REFLECTION</span>
+        <h1 style="font-size: 40px; font-weight: 800; color: #332014; margin-bottom: 12px;">Share Your Personal Experience</h1>
+        <p style="font-size: 15px; color: #7C5E47; line-height: 1.6; max-width: 680px; margin: 0 auto;">
+            Psychological research shows that translating emotional turmoil into written words soothes amygdala hyperactivity. Share your story anonymously, or browse reflections from others.
+        </p>
+    </header>
+
+    <!-- Main Write Story Form -->
+    <section class="ai-demo-wrapper" style="max-width: 860px; margin-top: 10px;">
+        <div class="demo-card" style="border: 1.5px solid var(--border-warm); box-shadow: 0 10px 30px rgba(180, 110, 60, 0.08);">
+            <div class="demo-header">
+                <span class="badge-mini" style="background: #EBF4FC; color: #2563EB;">ANONYMOUS & CONFIDENTIAL</span>
+                <h2 style="font-size: 24px; font-weight: 800; color: #332014; margin-top: 8px;">Tell Mindora What You Walked Through</h2>
+                <p style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">
+                    Our AI classifier reads your narrative with care, detects the underlying emotional tone, and shares your reflection with the supportive community.
+                </p>
+            </div>
+
+            <form action="{{ url_for('write_story') }}" method="POST" style="margin-top: 20px;">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 700; color: #332014; margin-bottom: 6px;">
+                        Author or Pseudonym
+                    </label>
+                    <input type="text" name="author" placeholder="Anonymous Student (or your chosen pseudonym)" value="Anonymous Student" style="background: var(--card-sub); border: 1.5px solid var(--border-warm); padding: 12px 16px; border-radius: 12px; font-size: 14px; width: 100%;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 700; color: #332014; margin-bottom: 6px;">
+                        Story Title
+                    </label>
+                    <input type="text" name="title" required placeholder="e.g., 'How I Navigated Final Exam Burnout' or 'Letting Go of a Hurtful Friendship'" style="background: var(--card-sub); border: 1.5px solid var(--border-warm); padding: 12px 16px; border-radius: 12px; font-size: 14px; width: 100%;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 13px; font-weight: 700; color: #332014; margin-bottom: 6px;">
+                        Your Written Experience
+                    </label>
+                    <textarea name="story" required placeholder="Write freely about what happened, how you felt in your body and mind, and what helped you make peace with it..." style="height: 160px; background: var(--card-sub); border: 1.5px solid var(--border-warm); padding: 14px 16px; border-radius: 12px; font-size: 14px; width: 100%; line-height: 1.6;"></textarea>
+                </div>
+
+                <button type="submit" class="btn-pill-orange btn-full" style="font-size: 15px; padding: 14px; font-weight: 800; cursor: pointer;">
+                    Publish Reflection & Detect Emotion →
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Community Reflections Stream -->
+    <section class="headspace-section" style="max-width: 1140px; margin-top: 50px;">
+        <h2 class="headspace-title" style="font-size: 28px; font-weight: 800; color: #332014; margin-bottom: 10px;">
+            Recent Community Reflections 🌿
+        </h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 28px;">
+            Words of courage, vulnerability, and resilience shared by others walking similar paths.
+        </p>
+
+        <div class="plans-grid">
+            {% if stories %}
+                {% for s in stories %}
+                <div class="plan-card" style="cursor: default; background: #FFFFFF; border: 1.5px solid var(--border-soft); border-radius: 20px; padding: 24px; box-shadow: 0 4px 14px rgba(220, 140, 90, 0.05); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div class="plan-top" style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+                            <span style="color: var(--orange-hover);">✍️ {{ s.author }}</span>
+                            <span style="color: #947259;">{{ s.timestamp.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <h4 style="font-size: 17px; font-weight: 800; color: #332014; margin: 12px 0 8px 0; line-height: 1.35;">
+                            {{ s.title }}
+                        </h4>
+                        <p style="font-size: 13.5px; color: #5B4332; line-height: 1.6; margin-bottom: 16px;">
+                            "{{ s.content[:240] }}{% if s.content|length > 240 %}...{% endif %}"
+                        </p>
+                    </div>
+
+                    <div style="padding-top: 12px; border-top: 1px solid var(--border-soft); display: flex; justify-content: space-between; align-items: center;">
+                        <span class="emotion-tag mood-{{ s.detected_emotion.lower() }}">
+                            Detected: {{ s.detected_emotion.upper() }}
+                        </span>
+                        <span style="font-size: 12px; color: #947259;">Shared openly</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="grid-column: 1 / -1; background: #FFFFFF; border: 1.5px dashed var(--border-warm); border-radius: 20px; padding: 40px; text-align: center;">
+                    <span style="font-size: 36px; display: block; margin-bottom: 8px;">🌱</span>
+                    <h3 style="font-size: 18px; font-weight: 800; color: #332014;">No community stories shared yet</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                        Be the first to share your journey and inspire someone who might be going through the exact same thing today.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

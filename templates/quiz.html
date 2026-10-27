@@ -1,0 +1,979 @@
+{% extends "base.html" %}
+{% block title %}Quizzes to Discover Your True Self | Mindora{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       SLIDE-MATCHING QUIZ SHOWCASE
+       ============================================================ */
+    .quiz-slide-wrapper {
+        background: linear-gradient(180deg, #FDE8D4 0%, #FCD5B5 45%, #FFF9F3 100%);
+        padding: 40px 20px 80px 20px;
+        min-height: 100vh;
+    }
+
+    .quiz-slide-header {
+        text-align: center;
+        max-width: 860px;
+        margin: 0 auto 36px auto;
+    }
+
+    .quiz-slide-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 42px;
+        font-weight: 600;
+        color: #2F2016;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    .quiz-slide-sub {
+        font-size: 15px;
+        font-weight: 500;
+        color: #553B28;
+        line-height: 1.5;
+    }
+
+    /* 4-Column Grid of Slide Mockup Cards */
+    .slide-cards-grid {
+        max-width: 1220px;
+        margin: 0 auto 50px auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+        padding: 0 10px;
+    }
+
+    @media (max-width: 1080px) {
+        .slide-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 600px) {
+        .slide-cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .slide-quiz-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 24px 18px 22px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(180, 100, 50, 0.08);
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .slide-quiz-card:hover, .slide-quiz-card.card-active {
+        transform: translateY(-6px);
+        border-color: #FA8C4E;
+        box-shadow: 0 14px 32px rgba(220, 110, 40, 0.16);
+    }
+
+    /* Circular Themed Vector Emblem */
+    .slide-circle-emblem {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background-color: #0E3B36; /* Deep forest teal circle from slide */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .slide-card-heading {
+        font-size: 15px;
+        font-weight: 700;
+        color: #2F2016;
+        line-height: 1.4;
+        min-height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        padding: 0 4px;
+    }
+
+    .slide-take-btn {
+        background: #FA8C4E;
+        color: #FFFFFF;
+        border: none;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 9px 28px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 4px 12px rgba(250, 140, 78, 0.3);
+    }
+
+    .slide-take-btn:hover {
+        background: #E27236;
+        transform: scale(1.03);
+    }
+
+    /* Interactive Quiz Test Section */
+    .quiz-active-section {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 10px;
+    }
+
+    .quiz-active-card {
+        background: #FFFFFF;
+        border: 1.5px solid #F0D5BE;
+        border-radius: 24px;
+        padding: 40px 34px;
+        box-shadow: 0 14px 40px rgba(180, 110, 60, 0.09);
+    }
+
+    .quiz-active-header {
+        border-bottom: 1.5px solid #F6DBC3;
+        padding-bottom: 18px;
+        margin-bottom: 26px;
+    }
+
+    .question-block {
+        background: #FFFDFB;
+        border: 1.5px solid #F6DBC3;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+
+    .question-text {
+        font-size: 15px;
+        font-weight: 700;
+        color: #332014;
+        margin-bottom: 14px;
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    @media (max-width: 700px) {
+        .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .quiz-option-pill {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #FFFFFF;
+        border: 1.5px solid #F3DFC9;
+        padding: 12px 18px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .quiz-option-pill:hover {
+        border-color: #FA8C4E;
+        background: #FFF7EE;
+    }
+
+    .quiz-option-pill input[type="radio"] {
+        accent-color: #FA8C4E;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .quiz-option-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4A3323;
+    }
+
+    .quiz-result-card {
+        background: #FFFDFB;
+        border: 1.5px solid #F0D5BE;
+        border-radius: 20px;
+        padding: 32px;
+        margin-top: 24px;
+    }
+
+    .badge-result {
+        background: #DCFCE7;
+        color: #16A34A;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: 50px;
+    }
+</style>
+
+<div class="quiz-slide-wrapper">
+
+    <!-- Top Headline (Matching Slide) -->
+    <header class="quiz-slide-header">
+        <h1 class="quiz-slide-title">Quizzes to Discover Your True Self</h1>
+        <p class="quiz-slide-sub">Our free quiz can help you take a proactive approach to your mental health and wellness!</p>
+    </header>
+
+    <!-- 4 White Cards Row (Matching Slide) -->
+    <section class="slide-cards-grid">
+        
+        <!-- Card 1: Relationship Readiness -->
+        <article class="slide-quiz-card card-active" id="card-relationship" onclick="loadSelectedQuiz('relationship')">
+            <div class="slide-circle-emblem">
+                <svg viewBox="0 0 100 100" width="120" height="120">
+                    <circle cx="50" cy="50" r="48" fill="#0E3B36" />
+                    <path d="M50 32 C48 27 41 27 41 33 C41 40 50 46 50 46 C50 46 59 40 59 33 C59 27 52 27 50 32 Z" fill="#FF7582" />
+                    <circle cx="34" cy="52" r="10" fill="#FFCDB2" />
+                    <path d="M22 75 C22 62 46 62 46 75 Z" fill="#FA8C4E" />
+                    <circle cx="66" cy="52" r="10" fill="#FFD8BE" />
+                    <path d="M54 75 C54 62 78 62 78 75 Z" fill="#E9C46A" />
+                </svg>
+            </div>
+            <h3 class="slide-card-heading">Are You Ready For a Relationship? | Fun &amp; Free Quiz</h3>
+            <button type="button" class="slide-take-btn">Take Quiz</button>
+        </article>
+
+        <!-- Card 2: ACE Childhood Trauma -->
+        <article class="slide-quiz-card" id="card-trauma" onclick="loadSelectedQuiz('trauma')">
+            <div class="slide-circle-emblem">
+                <svg viewBox="0 0 100 100" width="120" height="120">
+                    <circle cx="50" cy="50" r="48" fill="#092823" />
+                    <path d="M20 40 C35 15 65 15 80 40 C85 60 70 80 50 80 C30 80 15 60 20 40 Z" fill="#031613" />
+                    <circle cx="43" cy="34" r="2.5" fill="#52B788" />
+                    <circle cx="57" cy="34" r="2.5" fill="#52B788" />
+                    <circle cx="50" cy="50" r="8" fill="#E0A96D" />
+                    <path d="M40 76 C40 60 60 60 60 76 Z" fill="#E76F51" />
+                </svg>
+            </div>
+            <h3 class="slide-card-heading">The ACE Quiz: Did You Experience Childhood Trauma?</h3>
+            <button type="button" class="slide-take-btn">Take Quiz</button>
+        </article>
+
+        <!-- Card 3: Loneliness Test -->
+        <article class="slide-quiz-card" id="card-loneliness" onclick="loadSelectedQuiz('loneliness')">
+            <div class="slide-circle-emblem">
+                <svg viewBox="0 0 100 100" width="120" height="120">
+                    <circle cx="50" cy="50" r="48" fill="#0C3831" />
+                    <path d="M10 80 C15 50 30 50 35 80 Z" fill="#06221D" />
+                    <path d="M65 80 C70 50 85 50 90 80 Z" fill="#06221D" />
+                    <circle cx="50" cy="46" r="8.5" fill="#F4A261" />
+                    <path d="M41 44 C41 38 59 38 59 44 C59 52 41 52 41 44 Z" fill="#264653" />
+                    <path d="M38 78 C38 60 62 60 62 78 Z" fill="#F4A261" />
+                </svg>
+            </div>
+            <h3 class="slide-card-heading">Am I Lonely? Take Our Loneliness Test to Find Out!</h3>
+            <button type="button" class="slide-take-btn">Take Quiz</button>
+        </article>
+
+        <!-- Card 4: Anxiety Test -->
+        <article class="slide-quiz-card" id="card-anxiety" onclick="loadSelectedQuiz('anxiety')">
+            <div class="slide-circle-emblem">
+                <svg viewBox="0 0 100 100" width="120" height="120">
+                    <circle cx="50" cy="50" r="48" fill="#0D3530" />
+                    <path d="M25 40 Q50 15 75 40 T25 65" fill="none" stroke="#52B788" stroke-width="1.8" stroke-dasharray="3,3" />
+                    <circle cx="48" cy="44" r="8" fill="#E9C46A" />
+                    <path d="M40 42 C40 36 56 36 56 42 C56 50 40 50 40 42 Z" fill="#1D3557" />
+                    <path d="M36 78 C36 58 60 58 60 78 Z" fill="#F77F00" />
+                    <path d="M46 78 C46 68 64 68 64 78 Z" fill="#457B9D" />
+                </svg>
+            </div>
+            <h3 class="slide-card-heading">Do I Have Anxiety? Free Anxiety Test!</h3>
+            <button type="button" class="slide-take-btn">Take Quiz</button>
+        </article>
+
+    </section>
+
+    <!-- Active Assessment Form & Results Container -->
+    <section class="quiz-active-section" id="quizActiveSection">
+        <div class="quiz-active-card">
+            
+            <header class="quiz-active-header">
+                <span class="badge-mini" id="activeBadge">RELATIONSHIP READINESS</span>
+                <h2 id="activeQuizTitle" style="font-size: 24px; font-weight: 800; color: #332014; margin-top: 8px;">
+                    Are You Ready For a Relationship? | Fun &amp; Free Quiz
+                </h2>
+                <p id="activeQuizSub" style="font-size: 14px; color: #7C5E47; margin-top: 4px;">
+                    Take a calm moment for yourself. Choose the response that feels closest to your recent experience.
+                </p>
+            </header>
+
+            <form id="quizDynamicForm" onsubmit="handleQuizSubmit(event)">
+                <div id="questionsContainer">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <div style="margin-top: 26px; text-align: center;">
+                    <button type="submit" class="slide-take-btn" style="padding: 13px 44px; font-size: 15px;">
+                        Calculate Results →
+                    </button>
+                </div>
+            </form>
+
+            <!-- Results Display -->
+            <div id="quizResultWrapper" style="display: none;">
+                <div class="quiz-result-card">
+                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                        <span id="resultIcon" style="font-size: 38px;">💖</span>
+                        <div>
+                            <span class="badge-result">EVALUATION COMPLETED</span>
+                            <h3 id="resultTitle" style="font-size: 22px; font-weight: 800; color: #332014; margin-top: 4px;">
+                                Emotionally Ready &amp; Grounded
+                            </h3>
+                        </div>
+                    </div>
+                    
+                    <div id="resultLead" style="font-size: 14.5px; line-height: 1.65; color: #5B4332; background: #FFF9F3; padding: 16px 20px; border-radius: 14px; border-left: 5px solid #FA8C4E; margin: 16px 0;">
+                        You possess a secure connection with yourself and communicate boundaries with clarity.
+                    </div>
+
+                    <h4 style="font-size: 15px; font-weight: 800; color: #332014; margin-top: 18px;">Recommended Next Steps:</h4>
+                    <ul id="resultTips" style="list-style-type: none; padding-left: 0; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                        <!-- Dynamic tips -->
+                    </ul>
+
+                    <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="{{ url_for('home') }}#assessment-section" class="slide-take-btn" style="text-decoration: none; display: inline-block;">
+                            Run Live AI Check-in on Home →
+                        </a>
+                        <button type="button" onclick="retakeActiveQuiz()" class="btn-pill btn-secondary">
+                            Retake Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<script>
+const SLIDE_QUIZZES = {
+    relationship: {
+        badge: "RELATIONSHIP READINESS",
+        title: "Are You Ready For a Relationship? | Fun & Free Quiz",
+        sub: "Take a calm moment for yourself. Choose the response that feels closest to your recent experience.",
+        questions: [
+            {
+                q: "1. How comfortable are you expressing your honest needs and personal boundaries to others?",
+                options: [
+                    { text: "Comfortable; I speak kindly and directly", score: 0 },
+                    { text: "I can do it, but it takes deliberate courage", score: 1 },
+                    { text: "I often compromise my own peace to avoid conflict", score: 2 },
+                    { text: "I find it nearly impossible to say no without panic", score: 3 }
+                ]
+            },
+            {
+                q: "2. When you picture entering a romantic relationship, what is your primary feeling?",
+                options: [
+                    { text: "Excitement to share life and grow together", score: 0 },
+                    { text: "Curiosity, but wanting to take things step-by-step", score: 1 },
+                    { text: "Worry that I might lose my independence", score: 2 },
+                    { text: "Anxious hope that someone else will fix my self-doubt", score: 3 }
+                ]
+            },
+            {
+                q: "3. When someone you care about needs personal space, how do you react?",
+                options: [
+                    { text: "I respect their space and focus happily on my own hobbies", score: 0 },
+                    { text: "I feel slightly uneasy, but remind myself it's healthy", score: 1 },
+                    { text: "I spiral and constantly wonder if I did something wrong", score: 2 },
+                    { text: "I feel rejected and want to withdraw completely", score: 3 }
+                ]
+            },
+            {
+                q: "4. When a disagreement arises with someone you care about, what's your usual approach?",
+                options: [
+                    { text: "I address it calmly and look for a resolution together", score: 0 },
+                    { text: "I need some time to process before discussing it", score: 1 },
+                    { text: "I tend to avoid the conflict altogether", score: 2 },
+                    { text: "I either shut down completely or react with intense emotion", score: 3 }
+                ]
+            },
+            {
+                q: "5. How do you generally feel about trusting a romantic partner with your vulnerabilities?",
+                options: [
+                    { text: "I trust naturally once someone has shown consistency", score: 0 },
+                    { text: "I trust slowly, but I'm open to it", score: 1 },
+                    { text: "I struggle to fully trust, even when someone is reliable", score: 2 },
+                    { text: "I assume people will eventually hurt or abandon me", score: 3 }
+                ]
+            },
+            {
+                q: "6. Does your sense of self-worth depend on being in a relationship?",
+                options: [
+                    { text: "No, I feel whole and valuable regardless of my relationship status", score: 0 },
+                    { text: "Mostly no, though I sometimes compare myself to coupled friends", score: 1 },
+                    { text: "Somewhat; being single makes me feel like something's missing", score: 2 },
+                    { text: "Yes, I feel most worthy of love only when someone chooses me", score: 3 }
+                ]
+            },
+            {
+                q: "7. Looking back at past relationships or crushes, what pattern do you notice most?",
+                options: [
+                    { text: "I've grown and learned healthy lessons from each one", score: 0 },
+                    { text: "A few repeated patterns, but I'm working on them", score: 1 },
+                    { text: "I tend to repeat the same painful dynamics", score: 2 },
+                    { text: "I consistently pick partners who mirror unresolved childhood wounds", score: 3 }
+                ]
+            },
+            {
+                q: "8. How comfortable are you being emotionally open and vulnerable with a partner?",
+                options: [
+                    { text: "Very comfortable; I share my inner world freely", score: 0 },
+                    { text: "Comfortable once trust is established", score: 1 },
+                    { text: "I keep most of my feelings guarded", score: 2 },
+                    { text: "I find vulnerability terrifying and avoid it at all costs", score: 3 }
+                ]
+            },
+            {
+                q: "9. In a relationship, how do you handle compromise?",
+                options: [
+                    { text: "I compromise while still honoring my own needs", score: 0 },
+                    { text: "I compromise most of the time, occasionally at my own expense", score: 1 },
+                    { text: "I often lose myself trying to keep the peace", score: 2 },
+                    { text: "I either give up everything or refuse to budge at all", score: 3 }
+                ]
+            },
+            {
+                q: "10. When stress builds up between you and someone close, how do you communicate?",
+                options: [
+                    { text: "I express myself clearly and listen actively", score: 0 },
+                    { text: "I need to calm down first, then I communicate well", score: 1 },
+                    { text: "I get defensive or shut down mid-conversation", score: 2 },
+                    { text: "I lash out or completely withdraw without explanation", score: 3 }
+                ]
+            }
+        ],
+        results: {
+            low: {
+                icon: "💖",
+                title: "Secure & Emotionally Grounded",
+                lead: "You enter connections from a foundation of inner wholeness. You understand that healthy partnerships multiply joy rather than complete identity.",
+                tips: [
+                    "Continue communicating boundaries kindly and directly.",
+                    "Cherish shared vulnerability while maintaining your personal hobbies and growth."
+                ]
+            },
+            mid: {
+                icon: "🌱",
+                title: "Growing Toward Secure Attachment",
+                lead: "You have strong self-insight, but occasionally feel anxious when navigating conflicts or personal boundaries.",
+                tips: [
+                    "Practice stating small preferences without apologizing.",
+                    "Remember that taking space is a sign of sustainable love, not rejection."
+                ]
+            },
+            high: {
+                icon: "🤍",
+                title: "Prioritize Healing Your Relationship with Yourself First",
+                lead: "Your answers indicate relationship anxiety or fear of abandonment. Focusing on loving and validating yourself will build far healthier foundations.",
+                tips: [
+                    "Explore our private journal to externalize fears before reacting.",
+                    "Remind yourself daily: 'My worth exists independent of someone else's approval.'"
+                ]
+            }
+        }
+    },
+    trauma: {
+        badge: "EARLY LIFE RESILIENCE (ACE)",
+        title: "The ACE Quiz: Did You Experience Childhood Trauma?",
+        sub: "Understanding the origins of nervous system defenses helps you cultivate compassionate self-care.",
+        questions: [
+            {
+                q: "1. Growing up, did you often feel that your emotional experiences were dismissed or unsafe to share?",
+                options: [
+                    { text: "Rarely; my household encouraged open talk", score: 0 },
+                    { text: "Sometimes, depending on the family mood", score: 1 },
+                    { text: "Frequently; I learned to hide my emotions to stay safe", score: 2 },
+                    { text: "Constantly; vulnerability led to harsh criticism or punishment", score: 3 }
+                ]
+            },
+            {
+                q: "2. When unexpected loud sounds or arguments happen nearby, how does your body respond?",
+                options: [
+                    { text: "Mild surprise, then I stay calm", score: 0 },
+                    { text: "My heart beats faster, but settles in a few minutes", score: 1 },
+                    { text: "Instant freeze response, tense stomach, or adrenaline rush", score: 2 },
+                    { text: "Deep visceral panic and an urge to hide or escape", score: 3 }
+                ]
+            },
+            {
+                q: "3. Do you find yourself adopting a 'hyper-independent' mindset ('I can only rely on myself')?",
+                options: [
+                    { text: "No, I find it easy to trust and ask for support", score: 0 },
+                    { text: "Occasionally, but I accept help when offered", score: 1 },
+                    { text: "Yes, asking for help makes me feel uncomfortable and exposed", score: 2 },
+                    { text: "Extremely; I believe relying on others is dangerous", score: 3 }
+                ]
+            },
+            {
+                q: "4. As a child, did you feel physically safe in your home environment?",
+                options: [
+                    { text: "Always; my home felt secure and predictable", score: 0 },
+                    { text: "Mostly, with occasional unsettling moments", score: 1 },
+                    { text: "Rarely; unpredictability or fear was common", score: 2 },
+                    { text: "Never; my home felt dangerous or volatile", score: 3 }
+                ]
+            },
+            {
+                q: "5. Did a caregiver struggle with substance use, untreated mental illness, or severe conflict during your childhood?",
+                options: [
+                    { text: "No, my caregivers were stable and present", score: 0 },
+                    { text: "Occasionally, but it didn't heavily affect me", score: 1 },
+                    { text: "Yes, and it shaped how I felt safe in the home", score: 2 },
+                    { text: "Yes, significantly, and it affected my day-to-day life", score: 3 }
+                ]
+            },
+            {
+                q: "6. How often did you feel like you had to take care of adult responsibilities or emotions as a child?",
+                options: [
+                    { text: "Rarely; I was allowed to just be a kid", score: 0 },
+                    { text: "Sometimes, during difficult periods", score: 1 },
+                    { text: "Often; I felt responsible for a parent's wellbeing", score: 2 },
+                    { text: "Constantly; I had to parent myself or others", score: 3 }
+                ]
+            },
+            {
+                q: "7. Do you struggle with a persistent inner critic that echoes harsh things said to you growing up?",
+                options: [
+                    { text: "No, my inner voice is generally kind", score: 0 },
+                    { text: "Occasionally, in moments of failure", score: 1 },
+                    { text: "Frequently; I hear critical voices often", score: 2 },
+                    { text: "Constantly; my self-talk is harsh and relentless", score: 3 }
+                ]
+            },
+            {
+                q: "8. How do you typically respond to authority figures or people in power?",
+                options: [
+                    { text: "Neutral and comfortable; I see them as equals", score: 0 },
+                    { text: "Slightly anxious but generally fine", score: 1 },
+                    { text: "Very anxious, expecting punishment or disapproval", score: 2 },
+                    { text: "I either become people-pleasing or defiantly rebellious", score: 3 }
+                ]
+            },
+            {
+                q: "9. Do you find it difficult to identify or name your own emotions in the moment?",
+                options: [
+                    { text: "No, I can usually name what I feel", score: 0 },
+                    { text: "Sometimes it takes me a while", score: 1 },
+                    { text: "Often, I feel numb or confused about my emotions", score: 2 },
+                    { text: "Almost always; my feelings feel like a foreign language", score: 3 }
+                ]
+            },
+            {
+                q: "10. How do you feel about your body and physical sensations (hunger, tiredness, tension)?",
+                options: [
+                    { text: "Attuned; I notice and respond to my body's needs", score: 0 },
+                    { text: "Fairly attuned, though I sometimes ignore signals", score: 1 },
+                    { text: "Disconnected; I often override or ignore my body", score: 2 },
+                    { text: "Very disconnected; I dissociate from my body regularly", score: 3 }
+                ]
+            }
+        ],
+        results: {
+            low: {
+                icon: "🛡️",
+                title: "Low Early-Life Chronic Burden",
+                lead: "Your formative environment provided reliable emotional safety, allowing your nervous system to build adaptive flexibility.",
+                tips: [
+                    "Continue nurturing supportive relationships in your adult life.",
+                    "Offer empathy to friends whose nervous systems remain on high alert."
+                ]
+            },
+            mid: {
+                icon: "🌤️",
+                title: "Adaptive Defensive Strategies",
+                lead: "You learned certain self-protective reflexes early in life that served you in the past, but may cause extra fatigue or hyper-vigilance today.",
+                tips: [
+                    "Notice when your body reacts defensively to situations that are actually safe today.",
+                    "Use Mindora's 4-4-4 Box Breathing visualizer when physical fight-or-flight triggers occur."
+                ]
+            },
+            high: {
+                icon: "🤲",
+                title: "Significant Somatic Trauma Signatures",
+                lead: "Your nervous system has survived sustained early stress. You are resilient, but carrying chronic autonomic tension.",
+                tips: [
+                    "Engage in somatic soothing (warm blankets, weighted comfort, slow gentle walks).",
+                    "Consider sharing these reflections with a trauma-informed mental health counselor."
+                ]
+            }
+        }
+    },
+    loneliness: {
+        badge: "SOCIAL & EMOTIONAL CONNECTION",
+        title: "Am I Lonely? Take Our Loneliness Test to Find Out!",
+        sub: "Distinguish between restful solitude and painful isolation.",
+        questions: [
+            {
+                q: "1. Even when surrounded by friends or classmates, how often do you feel truly known and understood?",
+                options: [
+                    { text: "Often; I feel deeply seen by my close circle", score: 0 },
+                    { text: "Sometimes; it depends on the group", score: 1 },
+                    { text: "Rarely; I feel like I'm playing a role to fit in", score: 2 },
+                    { text: "Never; I feel completely invisible inside", score: 3 }
+                ]
+            },
+            {
+                q: "2. When you experience exciting good news or sudden sadness, who do you contact?",
+                options: [
+                    { text: "I immediately text or call my go-to people", score: 0 },
+                    { text: "I have 1 person I reach out to eventually", score: 1 },
+                    { text: "I want to reach out, but feel like a burden", score: 2 },
+                    { text: "I keep everything to myself because no one would care", score: 3 }
+                ]
+            },
+            {
+                q: "3. How does quiet solitary time at home on a weekend feel?",
+                options: [
+                    { text: "Recharging and peaceful", score: 0 },
+                    { text: "Mostly fine, with occasional boredom", score: 1 },
+                    { text: "Accompanied by an aching hollow sensation in my chest", score: 2 },
+                    { text: "Agonizing; I doom-scroll to numb the silence", score: 3 }
+                ]
+            },
+            {
+                q: "4. How often do you go through your day without a meaningful conversation?",
+                options: [
+                    { text: "Rarely; I usually connect with someone daily", score: 0 },
+                    { text: "A couple of times a week", score: 1 },
+                    { text: "Most days pass without real conversation", score: 2 },
+                    { text: "Nearly every day feels conversation-less", score: 3 }
+                ]
+            },
+            {
+                q: "5. When scrolling through social media, how do you feel about others' friendships or gatherings?",
+                options: [
+                    { text: "Happy for them, unaffected personally", score: 0 },
+                    { text: "A little wistful, but not overwhelming", score: 1 },
+                    { text: "A sharp pang of exclusion or envy", score: 2 },
+                    { text: "Deep despair, like I'll never belong", score: 3 }
+                ]
+            },
+            {
+                q: "6. Do you have someone you could call at 2 AM during a crisis?",
+                options: [
+                    { text: "Yes, more than one person", score: 0 },
+                    { text: "Yes, one reliable person", score: 1 },
+                    { text: "I'm not sure anyone would answer", score: 2 },
+                    { text: "No, I have no one to call", score: 3 }
+                ]
+            },
+            {
+                q: "7. How often do you initiate plans or conversations with others?",
+                options: [
+                    { text: "Regularly; I enjoy reaching out first", score: 0 },
+                    { text: "Sometimes, when I feel brave enough", score: 1 },
+                    { text: "Rarely; I wait for others to reach out", score: 2 },
+                    { text: "Never; I've stopped trying altogether", score: 3 }
+                ]
+            },
+            {
+                q: "8. Do you feel like people would notice if you suddenly disappeared from their lives?",
+                options: [
+                    { text: "Definitely; several people would notice quickly", score: 0 },
+                    { text: "Probably a few close people", score: 1 },
+                    { text: "Maybe one person, eventually", score: 2 },
+                    { text: "Honestly, I don't think anyone would notice", score: 3 }
+                ]
+            },
+            {
+                q: "9. How connected do you feel to a community (friends group, family, classmates, coworkers)?",
+                options: [
+                    { text: "Very connected and included", score: 0 },
+                    { text: "Somewhat connected, with room to grow", score: 1 },
+                    { text: "On the outskirts, rarely truly included", score: 2 },
+                    { text: "Completely disconnected from any community", score: 3 }
+                ]
+            },
+            {
+                q: "10. When you're struggling emotionally, what do you usually do?",
+                options: [
+                    { text: "Reach out to someone I trust", score: 0 },
+                    { text: "Journal or self-soothe, then reach out later", score: 1 },
+                    { text: "Isolate further and hope it passes", score: 2 },
+                    { text: "Shut down completely and tell no one", score: 3 }
+                ]
+            }
+        ],
+        results: {
+            low: {
+                icon: "🌿",
+                title: "Healthy Solitude & Connectedness",
+                lead: "You have a balanced connection with others and find solitude nourishing rather than isolating.",
+                tips: [
+                    "Continue checking in with your close companions regularly.",
+                    "Express gratitude to people who hold space for your true self."
+                ]
+            },
+            mid: {
+                icon: "💬",
+                title: "Situational Loneliness",
+                lead: "You are experiencing natural waves of disconnect, often common during transitions, exams, or busy project phases.",
+                tips: [
+                    "Reach out to one friend with a low-pressure message: 'Thinking of you, how are you doing?'",
+                    "Join our 'Write A Story' community space to read shared student experiences."
+                ]
+            },
+            high: {
+                icon: "🤍",
+                title: "Chronic Social Isolation & Ache",
+                lead: "Your answers reflect deep emotional loneliness. Please know this is a widespread human experience and not a personal failure.",
+                tips: [
+                    "Engage in low-barrier social presence: work at a library or cafe with ambient human warmth.",
+                    "Practice naming your thoughts in Mindora's private journal to unburden your mind."
+                ]
+            }
+        }
+    },
+    anxiety: {
+        badge: "AUTONOMIC AROUSAL & WORRY",
+        title: "Do I Have Anxiety? Free Anxiety Test!",
+        sub: "Assess physical restlessness, racing thoughts, and nervous system activation.",
+        questions: [
+            {
+                q: "1. Over the past week, how frequently have uncontrollable 'what-if' thoughts occupied your mind?",
+                options: [
+                    { text: "Hardly ever; my thoughts stay mostly in the present", score: 0 },
+                    { text: "A few times during demanding deadlines", score: 1 },
+                    { text: "Daily; I spend hours analyzing future worst-case scenarios", score: 2 },
+                    { text: "Constantly; my mind feels like a radio that won't turn off", score: 3 }
+                ]
+            },
+            {
+                q: "2. Do you experience physical anxiety symptoms (tight chest, clenched teeth, trembling, nausea)?",
+                options: [
+                    { text: "No, my body feels relaxed", score: 0 },
+                    { text: "Only right before public speaking or exams", score: 1 },
+                    { text: "Yes, I notice tension or shallow breathing regularly", score: 2 },
+                    { text: "Yes, sudden adrenaline spikes or panic sensations strike without warning", score: 3 }
+                ]
+            },
+            {
+                q: "3. Does anxiety stop you from sleeping, participating in discussions, or trying new things?",
+                options: [
+                    { text: "Rarely; I do what matters despite mild nervousness", score: 0 },
+                    { text: "Occasionally causes minor procrastination", score: 1 },
+                    { text: "Yes, I often cancel plans or avoid challenges out of fear", score: 2 },
+                    { text: "Extremely; it significantly restricts my everyday life", score: 3 }
+                ]
+            },
+            {
+                q: "4. Do you experience restlessness or an inability to sit still when anxious?",
+                options: [
+                    { text: "Rarely; I can stay calm and grounded", score: 0 },
+                    { text: "Occasionally during high-pressure moments", score: 1 },
+                    { text: "Frequently; I fidget or pace often", score: 2 },
+                    { text: "Constantly; stillness feels almost impossible", score: 3 }
+                ]
+            },
+            {
+                q: "5. How often do you seek reassurance from others about decisions or worries?",
+                options: [
+                    { text: "Rarely; I trust my own judgment", score: 0 },
+                    { text: "Sometimes, for bigger decisions", score: 1 },
+                    { text: "Often; I need frequent reassurance to feel okay", score: 2 },
+                    { text: "Constantly; I can't move forward without it", score: 3 }
+                ]
+            },
+            {
+                q: "6. Do you experience trouble falling or staying asleep due to racing thoughts?",
+                options: [
+                    { text: "No, my sleep is generally restful", score: 0 },
+                    { text: "Occasionally, during stressful weeks", score: 1 },
+                    { text: "Regularly; my mind races most nights", score: 2 },
+                    { text: "Almost every night; anxiety keeps me awake", score: 3 }
+                ]
+            },
+            {
+                q: "7. How do you react to uncertainty or not knowing what will happen next?",
+                options: [
+                    { text: "I feel comfortable with ambiguity", score: 0 },
+                    { text: "Mildly uneasy, but I manage", score: 1 },
+                    { text: "Very distressed; I need control or certainty", score: 2 },
+                    { text: "Overwhelmed; uncertainty feels unbearable", score: 3 }
+                ]
+            },
+            {
+                q: "8. Do you avoid situations (social events, calls, decisions) because of anxious feelings?",
+                options: [
+                    { text: "Rarely; I engage despite some nerves", score: 0 },
+                    { text: "Sometimes, for especially stressful situations", score: 1 },
+                    { text: "Often; avoidance is my main coping strategy", score: 2 },
+                    { text: "Almost always; avoidance controls my daily choices", score: 3 }
+                ]
+            },
+            {
+                q: "9. How often do you experience a racing heart, sweating, or shortness of breath without physical exertion?",
+                options: [
+                    { text: "Rarely or never", score: 0 },
+                    { text: "Occasionally in stressful moments", score: 1 },
+                    { text: "Fairly often, even in calm settings", score: 2 },
+                    { text: "Frequently, sometimes without any clear trigger", score: 3 }
+                ]
+            },
+            {
+                q: "10. Do worries about the future (health, finances, relationships) dominate your thinking?",
+                options: [
+                    { text: "Rarely; I stay mostly present-focused", score: 0 },
+                    { text: "Sometimes, especially during transitions", score: 1 },
+                    { text: "Often; future worries occupy much of my day", score: 2 },
+                    { text: "Nearly constantly; I can't escape future-focused dread", score: 3 }
+                ]
+            }
+        ],
+        results: {
+            low: {
+                icon: "🧘",
+                title: "Minimal Anxiety & Calm Regulation",
+                lead: "Your autonomic nervous system is regulated. You process uncertainty without entering prolonged fight-or-flight states.",
+                tips: [
+                    "Maintain your balance with consistent sleep and outdoor walks.",
+                    "Use our AI Emotion Check-in to track how life events influence your mood."
+                ]
+            },
+            mid: {
+                icon: "⚡",
+                title: "Moderate Situational Anxiety",
+                lead: "You are dealing with noticeable worry and physical tension, likely fueled by current life stressors.",
+                tips: [
+                    "Practice the Physiological Sigh: two quick inhales through the nose, long exhale through mouth.",
+                    "Cut off caffeine in the afternoon and listen to Mindora's 432Hz ambient soundscape."
+                ]
+            },
+            high: {
+                icon: "🌀",
+                title: "High Autonomic Anxiety & Overload",
+                lead: "Your nervous system is trapped in chronic alarm mode. Your body is working overtime to protect you from perceived threats.",
+                tips: [
+                    "Use the 5-4-3-2-1 grounding exercise immediately when panic strikes.",
+                    "Give yourself permission to slow down: anxiety is physiological, not a character flaw."
+                ]
+            }
+        }
+    }
+};
+
+let activeQuizId = "relationship";
+
+function loadSelectedQuiz(quizKey) {
+    activeQuizId = quizKey;
+
+    document.querySelectorAll(".slide-quiz-card").forEach(c => c.classList.remove("card-active"));
+    const card = document.getElementById("card-" + quizKey);
+    if (card) card.classList.add("card-active");
+
+    document.getElementById("quizResultWrapper").style.display = "none";
+    document.getElementById("quizDynamicForm").style.display = "block";
+
+    renderQuestions(quizKey);
+
+    document.getElementById("quizActiveSection").scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderQuestions(quizKey) {
+    const data = SLIDE_QUIZZES[quizKey];
+    if (!data) return;
+
+    document.getElementById("activeBadge").innerText = data.badge;
+    document.getElementById("activeQuizTitle").innerText = data.title;
+    document.getElementById("activeQuizSub").innerText = data.sub;
+
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+
+    data.questions.forEach((item, qIdx) => {
+        let optionsMarkup = "";
+        item.options.forEach((opt, oIdx) => {
+            const optId = `slide_q_${qIdx}_opt_${oIdx}`;
+            optionsMarkup += `
+                <label class="quiz-option-pill" for="${optId}">
+                    <input type="radio" name="sq_${qIdx}" id="${optId}" value="${opt.score}" ${oIdx === 0 ? 'checked' : ''}>
+                    <span class="quiz-option-text">${opt.text}</span>
+                </label>
+            `;
+        });
+
+        container.innerHTML += `
+            <div class="question-block">
+                <p class="question-text">${item.q}</p>
+                <div class="options-grid">
+                    ${optionsMarkup}
+                </div>
+            </div>
+        `;
+    });
+}
+
+function handleQuizSubmit(e) {
+    e.preventDefault();
+    const data = SLIDE_QUIZZES[activeQuizId];
+    let score = 0;
+
+    data.questions.forEach((_, idx) => {
+        const radio = document.querySelector(`input[name="sq_${idx}"]:checked`);
+        if (radio) score += parseInt(radio.value, 10);
+    });
+
+    // Thresholds scaled for 10 questions (max score 30)
+    let tier = "low";
+    if (score >= 20) tier = "high";
+    else if (score >= 10) tier = "mid";
+
+    const outcome = data.results[tier];
+
+    document.getElementById("resultIcon").innerText = outcome.icon;
+    document.getElementById("resultTitle").innerText = outcome.title;
+    document.getElementById("resultLead").innerText = outcome.lead;
+
+    const tipsContainer = document.getElementById("resultTips");
+    tipsContainer.innerHTML = "";
+    outcome.tips.forEach(t => {
+        tipsContainer.innerHTML += `
+            <li style="position: relative; padding-left: 24px; font-size: 14px; color: #4A3323; line-height: 1.55;">
+                <span style="position: absolute; left: 6px; color: #FA8C4E; font-weight: bold;">•</span>
+                ${t}
+            </li>
+        `;
+    });
+
+    // Auto-save result so Admin sees it in Admin panel
+    fetch("/api/quiz/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            quiz_title: data.title,
+            result_title: outcome.title,
+            score: score
+        })
+    }).catch(err => console.log("Quiz persistence note:", err));
+
+    document.getElementById("quizDynamicForm").style.display = "none";
+    document.getElementById("quizResultWrapper").style.display = "block";
+    document.getElementById("quizResultWrapper").scrollIntoView({ behavior: 'smooth' });
+}
+
+function retakeActiveQuiz() {
+    document.getElementById("quizResultWrapper").style.display = "none";
+    document.getElementById("quizDynamicForm").style.display = "block";
+    document.getElementById("quizActiveSection").scrollIntoView({ behavior: 'smooth' });
+}
+
+// Initial render
+document.addEventListener("DOMContentLoaded", () => {
+    renderQuestions("relationship");
+});
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Log In | Mindora{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper" style="min-height: calc(100vh - 180px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: linear-gradient(180deg, #FFF9F3 0%, #FDEEDF 100%);">
+    
+    <div class="auth-card" style="max-width: 440px; width: 100%; background: #FFFFFF; border: 1.5px solid var(--border-warm); border-radius: 24px; padding: 38px 34px; box-shadow: 0 16px 40px rgba(180, 110, 60, 0.1);">
+        
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 26px;">
+            <span style="font-size: 38px; display: inline-block; margin-bottom: 6px;">☀️</span>
+            <h2 style="font-size: 26px; font-weight: 800; color: #332014; margin-bottom: 6px;">Welcome Back</h2>
+            <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5;">
+                Log in to access your private mood journal and wellness trajectory.
+            </p>
+        </div>
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div style="margin-bottom: 16px;">
+                <label style="font-size: 13px; font-weight: 700; color: #332014; display: block; margin-bottom: 6px;">
+                    Email Address
+                </label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    required 
+                    placeholder="name@example.com"
+                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--border-warm); background: var(--card-sub); font-size: 14px;"
+                >
+            </div>
+
+            <div style="margin-bottom: 22px;">
+                <label style="font-size: 13px; font-weight: 700; color: #332014; display: block; margin-bottom: 6px;">
+                    Password
+                </label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    required 
+                    placeholder="••••••••"
+                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--border-warm); background: var(--card-sub); font-size: 14px;"
+                >
+            </div>
+
+            <button type="submit" class="btn-pill-orange btn-full" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 800; cursor: pointer;">
+                Log In →
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted);">
+            Don't have an account yet? 
+            <a href="{{ url_for('register') }}" style="color: var(--orange-hover); font-weight: 700; text-decoration: none;">
+                Sign up here
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

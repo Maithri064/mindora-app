@@ -1,0 +1,633 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Modern Emotion Tech Hero Section (Matches Reference Image) -->
+<section class="tech-hero-section">
+    <div class="tech-hero-container">
+        <!-- Left Side: Typography & Value Proposition -->
+        <div class="tech-hero-text">
+            <span class="tech-hero-tag">AI DEEP LEARNING &middot; NLP WELLNESS</span>
+            <h1 class="tech-hero-title">
+                Every text reflection<br>
+                carries emotion.<br>
+                <span>We help you decode it.</span>
+            </h1>
+            <p class="tech-hero-desc">
+                Mindora pairs Bidirectional LSTM natural language processing with clinical psychology to uncover subtle emotional patterns in everyday reflections and deliver personalized coping rituals.
+            </p>
+            <div class="hero-cta-group">
+                <a href="#assessment-section" class="btn-pill-orange">Analyze Emotion Now &rarr;</a>
+                <a href="#how-it-works" class="btn-pill btn-secondary">Explore AI Architecture</a>
+            </div>
+        </div>
+
+        <!-- Right Side: Graphic with Floating Conversation Emotion Badges -->
+        <div class="hero-visual-stage">
+            <img 
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" 
+                alt="Person calmly reflecting while working"
+                class="hero-base-photo"
+            >
+
+            <!-- Pill 1: Joy -->
+            <div class="chat-pill-row" style="top: 24px; left: -24px;">
+                <span class="chat-bubble-text">I finished the final project!</span>
+                <span class="chat-emotion-pill pill-joy">&check; Joy: 95.2%</span>
+            </div>
+
+            <!-- Pill 2: Fear / Anxiety -->
+            <div class="chat-pill-row" style="top: 110px; right: -28px;">
+                <span class="chat-bubble-text chat-bubble-blue">Concerned about the deadline.</span>
+                <span class="chat-emotion-pill pill-fear">&#9889; Anxiety: 88.4%</span>
+            </div>
+
+            <!-- Pill 3: Love / Warmth -->
+            <div class="chat-pill-row" style="top: 215px; left: -20px;">
+                <span class="chat-bubble-text">I feel so grateful for my team.</span>
+                <span class="chat-emotion-pill pill-love">&hearts; Love: 94.0%</span>
+            </div>
+
+            <!-- Pill 4: Sadness / Fatigue -->
+            <div class="chat-pill-row" style="bottom: 34px; right: -18px;">
+                <span class="chat-bubble-text">I've been feeling exhausted lately.</span>
+                <span class="chat-emotion-pill pill-sadness">&#9729; Sadness: 91.5%</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 01-04 Architecture Pipeline: "From conversations to emotional insights" -->
+<section class="pipeline-section" id="how-it-works">
+    <p class="pipeline-eyebrow">SYSTEM WORKFLOW</p>
+    <h2 class="pipeline-title">From conversations to emotional insights</h2>
+
+    <div class="pipeline-stepper-grid">
+        <!-- Step 01 -->
+        <div class="step-box-item">
+            <div class="step-number-circle">01</div>
+            <h4>Input text reflection</h4>
+            <p>Write freely about your day, deadlines, or thoughts. Mindora accepts raw, unstructured text without requiring manual category tags.</p>
+        </div>
+
+        <!-- Step 02 -->
+        <div class="step-box-item">
+            <div class="step-number-circle">02</div>
+            <h4>Bi-LSTM neural analysis</h4>
+            <p>Our Bidirectional LSTM network evaluates temporal token dependencies from both past and future context to classify 6 discrete affective states.</p>
+        </div>
+
+        <!-- Step 03 -->
+        <div class="step-box-item">
+            <div class="step-number-circle">03</div>
+            <h4>Explore continuous probabilities</h4>
+            <p>Instead of a rigid single label, review complete neural probability spreads with confidence metrics and the responsive Mood Aura Orb.</p>
+        </div>
+
+        <!-- Step 04 -->
+        <div class="step-box-item">
+            <div class="step-number-circle">04</div>
+            <h4>Personalized wellness rituals</h4>
+            <p>Convert insights into action with personalized self-care protocols: 528Hz soundscapes, somatic box breathing, and CBT exercises.</p>
+        </div>
+    </div>
+</section>
+
+<!-- MAIN FOCUS: Centered Live AI Emotion Console -->
+<section id="assessment-section" class="ai-demo-wrapper" style="max-width: 920px; margin: 40px auto; padding: 0 20px;" data-auth="{{ 'true' if session.get('user_id') else 'false' }}">
+    <div class="demo-card" style="border: 2px solid var(--orange-primary); box-shadow: 0 12px 35px rgba(250, 140, 78, 0.14);">
+        <div class="demo-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <span class="badge-mini" style="background: #FFE8D6; color: var(--orange-hover);">CORE NEURAL ENGINE</span>
+                <h2 style="font-size: 22px; margin-top: 6px;">Live Emotion Classifier &amp; Wellness Prescription</h2>
+            </div>
+            {% if session.get('user_id') %}
+                <span style="font-size: 12px; font-weight: 700; color: #059669; background: #DCFCE7; padding: 4px 12px; border-radius: 50px;">
+                    &bull; Logged in as {{ session.get('user_name', 'User').split()[0] }}
+                </span>
+            {% else %}
+                <span style="font-size: 12px; font-weight: 700; color: #DC2626; background: #FEE2E2; padding: 4px 12px; border-radius: 50px;">
+                    &#128274; Account Required to Save History
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="demo-body" style="margin-top: 16px;">
+            <label style="font-size: 13px; font-weight: 700; color: #332014; display: block; margin-bottom: 6px;">
+                Write about what's on your mind...
+            </label>
+            <textarea id="assessmentInput" placeholder="Express yourself freely (e.g., 'I am feeling overwhelmed with upcoming deadlines and my chest feels tight' or 'I just finished my presentation and feel so relieved!')..." style="height: 110px; font-size: 14px; width: 100%;"></textarea>
+
+            <button onclick="runAIAssessment()" id="analyzeBtn" class="btn-pill-orange btn-full" style="margin-top: 12px; font-size: 16px; letter-spacing: 0.2px; width: 100%;">
+                Analyze My Emotion &rarr;
+            </button>
+
+            <!-- Loading Spinner State -->
+            <div id="aiLoadingIndicator" style="display: none; text-align: center; padding: 24px 0;">
+                <div class="pacer-circle" style="width: 50px; height: 50px; font-size: 20px; animation: auraPulse 1s infinite alternate; margin: auto;">&#129504;</div>
+                <p style="font-size: 13px; color: var(--text-muted); font-weight: 700; margin-top: 10px;">Tokenizing text &amp; evaluating LSTM hidden states...</p>
+            </div>
+
+            <!-- Emotion Result Card with Mood Aura Orb -->
+            <div id="aiResultCard" class="innovative-result-wrap" style="display: none;">
+                <div class="aura-showcase-panel" id="auraPanel">
+                    <div class="aura-orb-container">
+                        <div class="aura-ring-glow" id="auraRing"></div>
+                        <div class="aura-orb" id="auraOrb">&#10024;</div>
+                    </div>
+                    
+                    <div class="aura-content">
+                        <div class="aura-meta-row">
+                            <h3 class="aura-title" id="detectedEmotionLabel">Joy Detected</h3>
+                            <span class="aura-conf-pill" id="confidencePill">98% Match</span>
+                        </div>
+                        <p class="aura-sub" id="detectedEmotionSubtitle">Your expression exhibits high emotional vitality and contentment.</p>
+                        
+                        <div class="innovative-affirmation" id="affirmationBox">
+                            &ldquo;I welcome happiness and allow myself to savor this moment.&rdquo;
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 14px; font-weight: 800; margin: 24px 0 10px 0; color: #332014;">
+                    Neural Network Probability Distribution:
+                </h4>
+                <div id="distributionGrid" class="distribution-grid"></div>
+
+                <h4 style="font-size: 16px; font-weight: 800; margin: 28px 0 4px 0; color: #332014;">
+                    Recommended Care Protocols:
+                </h4>
+                <p style="font-size: 13px; color: #7C5E47; margin-bottom: 12px;">
+                    Prescribed based on your detected emotional state to balance autonomic arousal:
+                </p>
+                
+                <div id="suggestedPlansList" class="plans-grid"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mindspace Focus Areas -->
+<section class="headspace-section" style="max-width: 1060px; margin: 40px auto; padding: 0 20px; text-align: center;">
+    <h2 class="headspace-title" style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-bottom: 24px;">What kind of mindspace are you looking for?</h2>
+    
+    <div class="headspace-grid">
+        <div class="headspace-card" onclick="openCategoryModal('stress')">
+            <span class="hs-text">Stress less</span>
+            <div class="hs-right">
+                <span class="hs-icon">&#9889;</span>
+                <span class="hs-arrow">&rsaquo;</span>
+            </div>
+        </div>
+
+        <div class="headspace-card" onclick="openCategoryModal('sleep')">
+            <span class="hs-text">Sleep soundly</span>
+            <div class="hs-right">
+                <span class="hs-icon">&#127769;</span>
+                <span class="hs-arrow">&rsaquo;</span>
+            </div>
+        </div>
+
+        <div class="headspace-card" onclick="openCategoryModal('anxiety')">
+            <span class="hs-text">Manage anxiety</span>
+            <div class="hs-right">
+                <span class="hs-icon">&#127744;</span>
+                <span class="hs-arrow">&rsaquo;</span>
+            </div>
+        </div>
+
+        <div class="headspace-card" onclick="openCategoryModal('thoughts')">
+            <span class="hs-text">Process thoughts</span>
+            <div class="hs-right">
+                <span class="hs-icon">&#128173;</span>
+                <span class="hs-arrow">&rsaquo;</span>
+            </div>
+        </div>
+
+        <div class="headspace-card" onclick="openCategoryModal('meditation')">
+            <span class="hs-text">Practice meditation</span>
+            <div class="hs-right">
+                <span class="hs-icon">&#129496;</span>
+                <span class="hs-arrow">&rsaquo;</span>
+            </div>
+        </div>
+
+        <div class="headspace-card" onclick="openCategoryModal('therapy')">
+            <span class="hs-text">Start therapy support</span>
+            <div class="hs-right">
+                <span class="hs-icon">&#128172;</span>
+                <span class="hs-arrow">&rsaquo;</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model-Specific & Technical FAQ Section -->
+<section class="faq-section" id="faq-section" style="max-width: 900px; margin: 60px auto; padding: 0 20px;">
+    <div style="text-align: center; margin-bottom: 26px;">
+        <p class="pipeline-eyebrow">FREQUENTLY ASKED QUESTIONS</p>
+        <h2 style="font-size: 34px; font-weight: 800; color: #2F1E12;">FAQ</h2>
+    </div>
+
+    <div class="faq-container">
+        <!-- FAQ 1: Long-form vs Short messages -->
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Can the model analyze long-form documents as well as short reflections?</span>
+                <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>Yes. The input text is preprocessed with Keras sequence tokenization and padded with a fixed maximum sequence length of 229 tokens using pre-padding. For longer entries, the recurrent architecture preserves sequential dependencies across earlier clauses while maintaining the final hidden state of the LSTM layers.</p>
+            </div>
+        </div>
+
+        <!-- FAQ 2: Bi-LSTM vs Traditional Sentiment Analysis -->
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>How does multi-class emotion classification differ from basic sentiment analysis?</span>
+                <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>Traditional sentiment analysis classifies text along a one-dimensional binary axis (positive vs. negative). Mindora's Bidirectional LSTM model classifies across 6 discrete psychological states (Joy, Sadness, Anger, Fear, Love, and Surprise). This enables distinct wellness interventions—for example, treating Fear with somatic box breathing and Anger with physiological cool-downs.</p>
+            </div>
+        </div>
+
+        <!-- FAQ 3: Language & Dataset Support -->
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>What datasets were used to train and evaluate the emotion model?</span>
+                <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>The model was trained on the CARER emotion benchmark dataset, containing verified multi-class self-reported emotional expressions. Performance was evaluated using Categorical Cross-Entropy, Accuracy (~88-91%), Weighted Precision, Recall, and F1-Scores across all 6 emotion categories.</p>
+            </div>
+        </div>
+
+        <!-- FAQ 4: Privacy & Journal Data Security -->
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>How does Mindora ensure data privacy and prevent sensitive leaks?</span>
+                <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>All personal diary entries and raw reflection text are isolated by authenticated session keys in SQLite. The administrative overview dashboard monitors only anonymized, aggregate metrics (such as total assessments completed and system health) without querying or exposing private journal text.</p>
+            </div>
+        </div>
+
+        <!-- FAQ 5: Clinical Safety & Crisis Escalation -->
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Does Mindora substitute for clinical psychological care?</span>
+                <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>No. Mindora is an academic digital wellness and self-reflection platform, not a diagnostic medical device. The application incorporates a real-time crisis escalation filter: if high-risk distress signals are detected, the system immediately presents verified 24/7 national mental health helplines (Tele-MANAS: 14416, KIRAN: 1800-599-0019, or 988).</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Safety Notice -->
+<section class="safety-section" style="max-width: 1140px; margin: 40px auto 60px auto; padding: 0 20px;">
+    <div class="safety-card">
+        <h3>Your Safety &amp; Well-Being Matter &#128737;&#65039;</h3>
+        <p>Mindora is designed for emotional awareness and self-reflection. If you are experiencing severe distress, please connect with a qualified mental health professional.</p>
+        <div style="display: flex; justify-content: center; gap: 20px; font-size: 12px; font-weight: 700; color: var(--orange-hover); margin-top: 12px;">
+            <span>&#128274; 100% Confidential</span>
+            <span>&#128221; Private Journaling</span>
+            <span>&#128680; 24/7 Crisis Escalation</span>
+        </div>
+    </div>
+</section>
+
+<!-- Authentication Required Modal -->
+<div id="authPromptModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="text-align: center; max-width: 440px;">
+        <div style="font-size: 40px; margin-bottom: 12px;">&#128274;</div>
+        <h3 style="font-size: 22px; font-weight: 800; color: #332014; margin-bottom: 8px;">Please Sign In First</h3>
+        <p style="font-size: 14px; color: #7C5E47; line-height: 1.6; margin-bottom: 24px;">
+            To classify your emotions, save your longitudinal mood trajectory, and keep your journal logs confidential, please log in or create a free Mindora account.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="{{ url_for('login') }}" class="btn-pill-orange" style="text-decoration: none;">Log In to My Account &rarr;</a>
+            <a href="{{ url_for('register') }}" class="btn-pill btn-secondary" style="text-decoration: none;">Create Free Account</a>
+            <button onclick="closeAuthModal()" style="background: none; border: none; font-size: 13px; color: #94A3B8; cursor: pointer; margin-top: 6px;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Category Selector Modal -->
+<div id="categoryModal" class="modal-backdrop" style="display: none;">
+    <div id="catModalCard" class="category-modal-card">
+        <button onclick="closeCategoryModal()" class="cat-close-btn" type="button">&times;</button>
+        <div class="cat-modal-header">
+            <div id="catHeaderGraphic" style="font-size: 40px; margin-bottom: 8px;"></div>
+            <h2 id="catModalTitle" style="font-size: 28px; font-weight: 800; color: #FFFFFF; margin-bottom: 8px;">Reframe stress</h2>
+            <p id="catModalSub" style="font-size: 15px; color: rgba(255, 255, 255, 0.9); max-width: 520px; margin: 0 auto 26px auto; line-height: 1.5;">Find balance in the hustle and bustle of everyday life with different stress-relieving techniques.</p>
+        </div>
+        <div id="catGrid" class="cat-items-grid"></div>
+        <div style="margin-top: 10px;">
+            <button onclick="applyCategoryToAssessment()" class="cat-action-btn" type="button">Try Mindora Free</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function isUserLoggedIn() {
+    var section = document.getElementById("assessment-section");
+    return section && section.getAttribute("data-auth") === "true";
+}
+
+function closeAuthModal() {
+    var modal = document.getElementById("authPromptModal");
+    if (modal) modal.style.display = "none";
+}
+
+var CATEGORY_DATA = {
+    stress: {
+        bg: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",
+        title: "Reframe stress",
+        sub: "Find balance in the hustle and bustle of everyday life with different stress-relieving techniques.",
+        graphic: "⚡ 🌤️",
+        promptText: "I am feeling overwhelmed with deadlines and need actionable techniques to reframe my stress.",
+        items: [
+            { icon: "🧘", title: "Meditations for every moment", desc: "Explore quick grounding exercises" },
+            { icon: "🚨", title: "SOS Collection", desc: "Emergency exercises when you need them immediately" },
+            { icon: "✏️", title: "Stress management", desc: "Learn cognitive skills to navigate difficult moments" },
+            { icon: "🧠", title: "Expert-led programs", desc: "Short daily modules on how to let go of pressure" }
+        ]
+    },
+    sleep: {
+        bg: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+        title: "Get the sleep of your dreams",
+        sub: "Let your mind drift off to sleep with bedtime meditations, relaxing sounds, and more.",
+        graphic: "🌙 ☁️",
+        promptText: "My mind is racing at bedtime and I need soothing techniques to fall asleep soundly.",
+        items: [
+            { icon: "😴", title: "Sleep meditations", desc: "Unwind with gentle guided wind-down routines" },
+            { icon: "📚", title: "Sleep health courses", desc: "Learn evidence-based sleep hygiene habits" },
+            { icon: "📻", title: "Sleepcasts", desc: "Listen to dreamy bedtime narrative walks" },
+            { icon: "🎵", title: "Soundscapes", desc: "Relax with ambient rain, ocean, and white noise" }
+        ]
+    },
+    anxiety: {
+        bg: "linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)",
+        title: "Navigate worry & anxiety",
+        sub: "Anchor your nervous system and reclaim calm when your thoughts feel scattered.",
+        graphic: "🌀 🛡️",
+        promptText: "I have high anxiety and racing thoughts about an upcoming event.",
+        items: [
+            { icon: "🌬️", title: "4-4-4 Box Breathing", desc: "Instant somatic stabilizer for nervous system arousal" },
+            { icon: "🌿", title: "5-4-3-2-1 Sensory Scan", desc: "Ground your awareness in physical reality" },
+            { icon: "📝", title: "Catastrophic Thought Audit", desc: "Reframe worst-case projections into realistic steps" },
+            { icon: "☕", title: "Quiet Comfort Reset", desc: "5-minute low-stimulation resting routine" }
+        ]
+    },
+    thoughts: {
+        bg: "linear-gradient(135deg, #EC4899 0%, #BE185D 100%)",
+        title: "Process your thoughts",
+        sub: "Turn chaotic internal dialogue into structured, clear, and peaceful reflection.",
+        graphic: "💭 ✍️",
+        promptText: "I need to unpack complex feelings that happened during my day today.",
+        items: [
+            { icon: "📔", title: "Expressive Journaling", desc: "Unfiltered written space to externalize your mind" },
+            { icon: "🏷️", title: "Affect Labeling", desc: "Name your exact emotion to soothe amygdala activity" },
+            { icon: "🌱", title: "Micro-Gratitude Log", desc: "Anchor three positive moments from today" },
+            { icon: "💡", title: "Clarity Prompting", desc: "Guided questions to separate facts from assumptions" }
+        ]
+    },
+    meditation: {
+        bg: "linear-gradient(135deg, #10B981 0%, #047857 100%)",
+        title: "Deepen your meditation",
+        sub: "Cultivate presence, loving-kindness, and somatic mindfulness daily.",
+        graphic: "🧘 🌸",
+        promptText: "I want to practice a calm mindfulness meditation to center my focus.",
+        items: [
+            { icon: "🧘", title: "Body Scan Meditation", desc: "Release unconscious tension from head to toe" },
+            { icon: "💖", title: "Loving-Kindness (Metta)", desc: "Direct warmth toward yourself and others" },
+            { icon: "🌬️", title: "Physiological Sighs", desc: "Quick neuro-resets for immediate parasympathetic tone" },
+            { icon: "🔔", title: "Silent Timed Sits", desc: "Uninterrupted quiet intervals with bell chimes" }
+        ]
+    },
+    therapy: {
+        bg: "linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)",
+        title: "Support between therapy",
+        sub: "Complement professional guidance with daily symptom tracking and structured care tools.",
+        graphic: "💬 🤝",
+        promptText: "I am tracking my emotional patterns alongside my therapy sessions.",
+        items: [
+            { icon: "📊", title: "Mood Trajectory Tracking", desc: "Share continuous emotional trends with your counselor" },
+            { icon: "🧩", title: "CBT Behavioral Activation", desc: "Small daily actions to rebuild positive momentum" },
+            { icon: "🛡️", title: "Crisis Safety Plan", desc: "Immediate access to verified support lines 24/7" },
+            { icon: "📋", title: "Session Reflection Prep", desc: "Jot down insights to discuss in your next meeting" }
+        ]
+    }
+};
+
+var activePromptText = "";
+
+function openCategoryModal(catKey) {
+    var data = CATEGORY_DATA[catKey];
+    if (!data) return;
+
+    activePromptText = data.promptText;
+
+    var modal = document.getElementById("categoryModal");
+    var card = document.getElementById("catModalCard");
+    
+    card.style.background = data.bg;
+    document.getElementById("catModalTitle").innerText = data.title;
+    document.getElementById("catModalSub").innerText = data.sub;
+    document.getElementById("catHeaderGraphic").innerText = data.graphic;
+
+    var grid = document.getElementById("catGrid");
+    grid.innerHTML = "";
+
+    data.items.forEach(function(item) {
+        grid.innerHTML += `
+            <div class="cat-item">
+                <div style="font-size: 24px; background: rgba(255,255,255,0.3); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">${item.icon}</div>
+                <div>
+                    <h4 style="font-size: 14px; font-weight: 800; color: #FFFFFF; margin-bottom: 2px;">${item.title}</h4>
+                    <p style="font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.35; margin: 0;">${item.desc}</p>
+                </div>
+            </div>
+        `;
+    });
+
+    modal.style.display = "flex";
+}
+
+function closeCategoryModal() {
+    var modal = document.getElementById("categoryModal");
+    if (modal) modal.style.display = "none";
+}
+
+function applyCategoryToAssessment() {
+    closeCategoryModal();
+    var inputEl = document.getElementById("assessmentInput");
+    if (inputEl) inputEl.value = activePromptText;
+    var section = document.getElementById("assessment-section");
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
+}
+
+function toggleFaq(btn) {
+    var item = btn.parentElement;
+    var answer = item.querySelector(".faq-answer");
+    var icon = item.querySelector(".faq-toggle-icon");
+    
+    if (item.classList.contains("active")) {
+        item.classList.remove("active");
+        answer.style.maxHeight = null;
+        icon.innerText = "+";
+    } else {
+        document.querySelectorAll(".faq-item").forEach(function(other) {
+            other.classList.remove("active");
+            other.querySelector(".faq-answer").style.maxHeight = null;
+            other.querySelector(".faq-toggle-icon").innerText = "+";
+        });
+        item.classList.add("active");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        icon.innerText = "−";
+    }
+}
+
+async function runAIAssessment() {
+    var textEl = document.getElementById("assessmentInput");
+    var text = textEl ? textEl.value.trim() : "";
+    if (!text) {
+        alert("Please write a few words about what is on your mind.");
+        return;
+    }
+
+    if (!isUserLoggedIn()) {
+        var modal = document.getElementById("authPromptModal");
+        if (modal) modal.style.display = "flex";
+        return;
+    }
+
+    var btn = document.getElementById("analyzeBtn");
+    var loader = document.getElementById("aiLoadingIndicator");
+    var resultCard = document.getElementById("aiResultCard");
+
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    btn.innerText = "Scanning Semantic Resonance & Emotion...";
+    loader.style.display = "block";
+    resultCard.style.display = "none";
+
+    try {
+        var res = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text })
+        });
+
+        if (res.status === 401) {
+            loader.style.display = "none";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.innerText = "Analyze My Emotion →";
+            var authModal = document.getElementById("authPromptModal");
+            if (authModal) authModal.style.display = "flex";
+            return;
+        }
+
+        var data = await res.json();
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerText = "Analyze My Emotion →";
+
+        if (data.error) {
+            alert("Analysis Notice: " + data.error);
+            return;
+        }
+
+        if (data.is_crisis) {
+            var crisisModal = document.getElementById("crisisModal");
+            if (crisisModal) crisisModal.style.display = "flex";
+        }
+
+        var orb = document.getElementById("auraOrb");
+        var ring = document.getElementById("auraRing");
+        var panel = document.getElementById("auraPanel");
+        
+        orb.style.backgroundColor = data.theme;
+        ring.style.backgroundColor = data.theme;
+        panel.style.borderLeft = `6px solid ${data.theme}`;
+        orb.innerText = data.emoji;
+
+        document.getElementById("detectedEmotionLabel").innerText = `${data.emotion.toUpperCase()} DETECTED`;
+        document.getElementById("detectedEmotionLabel").style.color = data.theme;
+        
+        var confPill = document.getElementById("confidencePill");
+        confPill.innerText = `${data.confidence}% Match`;
+        confPill.style.color = data.theme;
+
+        document.getElementById("detectedEmotionSubtitle").innerText = data.subtitle;
+        document.getElementById("affirmationBox").innerText = `“${data.affirmation}”`;
+
+        var distGrid = document.getElementById("distributionGrid");
+        distGrid.innerHTML = "";
+        for (var emo in data.breakdown) {
+            if (data.breakdown.hasOwnProperty(emo)) {
+                var val = data.breakdown[emo];
+                var isTop = emo.toLowerCase() === data.emotion.toLowerCase();
+                distGrid.innerHTML += `
+                    <div class="dist-item" style="${isTop ? 'border-color: ' + data.theme + '; background: #FFFDFB;' : ''}">
+                        <span class="dist-label">${emo}</span>
+                        <div class="dist-bar-track">
+                            <div class="dist-bar-fill" style="width: ${val}%; background: ${isTop ? data.theme : '#D1BBAA'};"></div>
+                        </div>
+                        <span class="dist-val">${val}%</span>
+                    </div>
+                `;
+            }
+        }
+
+        var plansContainer = document.getElementById("suggestedPlansList");
+        plansContainer.innerHTML = "";
+        
+        data.suggested_actions.forEach(function(action) {
+            var stepsEncoded = encodeURIComponent(JSON.stringify(action.steps));
+            var mode = action.mode || "steps";
+            var soundType = action.sound_type || "528hz";
+
+            var card = document.createElement("div");
+            card.className = "rich-plan-card";
+            card.onclick = function() {
+                openPlanModal(action.title, action.tag, action.duration, stepsEncoded, mode, soundType);
+            };
+
+            card.innerHTML = `
+                <div>
+                    <div class="plan-top">
+                        <span class="plan-tag-badge" style="background: #FFEAD7; color: ${data.theme};">${action.tag}</span>
+                        <span style="font-size: 12px; color: #7C5E47;">⏱️ ${action.duration}</span>
+                    </div>
+                    <h4 class="plan-title">${action.title}</h4>
+                    <p class="plan-desc">${action.short_desc}</p>
+                </div>
+                <div class="plan-launch-action">
+                    <span style="color: ${data.theme};">
+                        ${mode === 'sound' ? '🎧 Play Sound & Guide →' : mode === 'breath' ? '🌬️ Open Breathing Visualizer →' : 'Open Step Guide →'}
+                    </span>
+                    <span style="font-size: 20px;">${action.icon || '✨'}</span>
+                </div>
+            `;
+            plansContainer.appendChild(card);
+        });
+
+        resultCard.style.display = "block";
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+
+    } catch (err) {
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerText = "Analyze My Emotion →";
+        alert("Could not reach the AI service. Please verify Flask is running.");
+    }
+}
+</script>
+{% endblock %}

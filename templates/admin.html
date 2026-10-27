@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}Mindora Admin Console{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <span class="badge-mini" style="background: #EDE9FE; color: #7C3AED;">ADMINISTRATOR CONSOLE</span>
+            <h1 style="font-size: 32px; font-weight: 800; color: #332014; margin-top: 6px;">Platform Activity &amp; Oversight</h1>
+        </div>
+        <span style="font-size: 12px; font-weight: 700; color: #059669; background: #DCFCE7; padding: 6px 16px; border-radius: 50px;">
+            ● System Active (2026 Production)
+        </span>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="metric-tiles">
+        <div class="metric-card" style="border-left-color: #FA8C4E;">
+            <span class="metric-label">Registered Accounts</span>
+            <span class="metric-val">{{ total_users }}</span>
+        </div>
+        <div class="metric-card" style="border-left-color: #059669;">
+            <span class="metric-label">Emotion Assessments</span>
+            <span class="metric-val">{{ total_logs }}</span>
+        </div>
+        <div class="metric-card" style="border-left-color: #2563EB;">
+            <span class="metric-label">Quizzes Completed</span>
+            <span class="metric-val">{{ total_quizzes }}</span>
+        </div>
+        <div class="metric-card" style="border-left-color: #DB2777;">
+            <span class="metric-label">Stories Shared</span>
+            <span class="metric-val">{{ total_stories }}</span>
+        </div>
+        <div class="metric-card" style="border-left-color: #DC2626;">
+            <span class="metric-label">Contact Messages</span>
+            <span class="metric-val">{{ total_messages }}</span>
+        </div>
+    </div>
+
+    <!-- 6-Emotion Analytics Chart Card -->
+    <div class="admin-table-card" 
+         id="adminEmotionDataContainer"
+         data-emotions='{{ ["Anger", "Fear", "Joy", "Love", "Sadness", "Surprise"] | tojson }}'
+         data-counts='{{ [emotion_stats.get("anger", 0), emotion_stats.get("fear", 0), emotion_stats.get("joy", 0), emotion_stats.get("love", 0), emotion_stats.get("sadness", 0), emotion_stats.get("surprise", 0)] | tojson }}'>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div>
+                <h3>📊 6-Class Bi-LSTM Emotion Distribution Overview</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">
+                    Aggregated frequency distribution across all user reflections processed by the neural engine.
+                </p>
+            </div>
+            <span class="badge-mini" style="background: #FFEAD7; color: var(--orange-hover);">
+                Live Neural Stats
+            </span>
+        </div>
+
+        <div style="height: 280px; position: relative; margin-top: 14px;">
+            <canvas id="adminEmotionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 1. Contact Messages from Users -->
+    <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3>📩 Contact Us Messages &amp; Inquiries</h3>
+            <span class="badge-mini" style="background: #FEE2E2; color: #DC2626;">{{ total_messages }} Total</span>
+        </div>
+        {% if contact_messages %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Sender Name</th>
+                        <th>Email</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in contact_messages %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{ m.timestamp.strftime('%b %d, %I:%M %p') }}</td>
+                        <td><strong>{{ m.name }}</strong></td>
+                        <td><a href="mailto:{{ m.email }}" style="color: var(--orange-hover);">{{ m.email }}</a></td>
+                        <td>"{{ m.message }}"</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">No messages received yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- 2. Community Stories Shared -->
+    <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3>📖 Community Reflections ('Write A Story')</h3>
+            <span class="badge-mini" style="background: #FCE7F3; color: #DB2777;">{{ total_stories }} Total</span>
+        </div>
+        {% if stories %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Author</th>
+                        <th>Title</th>
+                        <th>Detected Tone</th>
+                        <th>Content Snippet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in stories %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{ s.timestamp.strftime('%b %d, %Y') }}</td>
+                        <td><strong>{{ s.author }}</strong></td>
+                        <td>{{ s.title }}</td>
+                        <td><span class="emotion-tag mood-{{ s.detected_emotion.lower() }}">{{ s.detected_emotion.upper() }}</span></td>
+                        <td>"{{ s.content[:140] }}..."</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">No stories published yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- 3. Quiz Assessments Activity -->
+    <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3>🧠 Self-Discovery Quiz Submissions</h3>
+            <span class="badge-mini" style="background: #DBEAFE; color: #2563EB;">{{ total_quizzes }} Total</span>
+        </div>
+        {% if quiz_submissions %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Quiz Name</th>
+                        <th>Score</th>
+                        <th>Result Tier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in quiz_submissions %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{ q.timestamp.strftime('%b %d, %I:%M %p') }}</td>
+                        <td><strong>{{ q.user_name }}</strong></td>
+                        <td>{{ q.quiz_name }}</td>
+                        <td>{{ q.score }} pts</td>
+                        <td><span class="badge-mini" style="background: #DCFCE7; color: #16A34A;">{{ q.result_title }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">No quiz submissions recorded yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- 4. Registered Users List -->
+    <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3>👥 Registered User Accounts</h3>
+            <span class="badge-mini" style="background: #FFE8D6; color: var(--orange-hover);">{{ total_users }} Users</span>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
+                        <th>Age</th>
+                        <th>Role</th>
+                        <th>Joined Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>#{{ u.user_id }}</td>
+                        <td><strong>{{ u.name }}</strong></td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.age }}</td>
+                        <td>
+                            {% if u.is_admin %}
+                                <span style="font-size: 11px; font-weight: 800; color: #7C3AED; background: #EDE9FE; padding: 2px 8px; border-radius: 50px;">Admin</span>
+                            {% else %}
+                                <span style="font-size: 11px; font-weight: 700; color: #64748B;">Member</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.created_at.strftime('%b %d, %Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Interactive Chart Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById("adminEmotionChart");
+    var container = document.getElementById("adminEmotionDataContainer");
+
+    if (ctx && container) {
+        var labels = ["Anger", "Fear", "Joy", "Love", "Sadness", "Surprise"];
+        var counts = [0, 0, 0, 0, 0, 0];
+
+        try {
+            labels = JSON.parse(container.getAttribute("data-emotions"));
+            counts = JSON.parse(container.getAttribute("data-counts"));
+        } catch (err) {
+            console.warn("Using fallback admin chart dataset:", err);
+        }
+
+        // Color coding matching your individual emotion themes
+        var emotionColors = [
+            "#DC2626", // Anger (Red)
+            "#7C3AED", // Fear (Purple)
+            "#059669", // Joy (Emerald)
+            "#DB2777", // Love (Pink)
+            "#2563EB", // Sadness (Blue)
+            "#0891B2"  // Surprise (Teal/Cyan)
+        ];
+
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Occurrences",
+                    data: counts,
+                    backgroundColor: emotionColors,
+                    borderRadius: 8,
+                    maxBarThickness: 50
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, color: "#7C5E47" },
+                        grid: { color: "#F6DBC3" }
+                    },
+                    x: {
+                        ticks: { color: "#332014", font: { weight: "bold" } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

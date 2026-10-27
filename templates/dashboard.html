@@ -1,0 +1,540 @@
+{% extends "base.html" %}
+{% block title %}My Wellness Dashboard | Mindora{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================
+     ADDED: Streak flame + workout reminder styles
+     (everything else in this file is your original dashboard)
+     ============================================================ -->
+<style>
+    /* ---------- Streak flame widget ---------- */
+    .streak-widget {
+        background: #FFFFFF;
+        border: 1.5px solid var(--border-warm);
+        border-radius: 20px;
+        padding: 18px 14px 16px 14px;
+        text-align: center;
+        box-shadow: 0 6px 18px rgba(220, 140, 90, 0.08);
+        position: relative;
+        overflow: hidden;
+        margin-top: 22px;
+    }
+
+    .streak-flame-stage {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 4px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .streak-flame-glow {
+        position: absolute;
+        inset: 6px;
+        border-radius: 50%;
+        filter: blur(16px);
+        opacity: 0.55;
+        animation: flameGlowPulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes flameGlowPulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.4; }
+        50%      { transform: scale(1.15); opacity: 0.7; }
+    }
+
+    .streak-flame-svg {
+        position: relative;
+        z-index: 2;
+        width: 66px;
+        height: 80px;
+        animation: flameFlicker 1.6s ease-in-out infinite;
+        transform-origin: bottom center;
+    }
+
+    @keyframes flameFlicker {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        25%      { transform: scale(1.04, 0.97) rotate(-2deg); }
+        50%      { transform: scale(0.97, 1.05) rotate(1deg); }
+        75%      { transform: scale(1.05, 0.96) rotate(2deg); }
+    }
+
+    .streak-number {
+        font-size: 34px;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1;
+        margin-top: 2px;
+    }
+
+    .streak-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    /* Tier colours (JS adds tier-0 … tier-5 to .streak-widget) */
+    .tier-0 .streak-flame-svg path { fill: #C9C2BA; }
+    .tier-0 .streak-flame-glow     { background: #C9C2BA; }
+    .tier-1 .streak-flame-svg path { fill: #60A5FA; }
+    .tier-1 .streak-flame-glow     { background: #60A5FA; }
+    .tier-2 .streak-flame-svg path { fill: #FA8C4E; }
+    .tier-2 .streak-flame-glow     { background: #FA8C4E; }
+    .tier-3 .streak-flame-svg path { fill: #E8541C; }
+    .tier-3 .streak-flame-glow     { background: #E8541C; }
+    .tier-4 .streak-flame-svg path { fill: #F5B400; }
+    .tier-4 .streak-flame-glow     { background: #F5B400; }
+    .tier-5 .streak-flame-svg      { filter: drop-shadow(0 0 10px #FFD700); }
+    .tier-5 .streak-flame-svg path { fill: url(#streakRainbowGradient); }
+    .tier-5 .streak-flame-glow     { background: linear-gradient(135deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF); }
+
+    .streak-next-hint {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--orange-hover);
+        background: #FFF2E6;
+        border-radius: 50px;
+        padding: 4px 10px;
+        display: inline-block;
+        margin-top: 8px;
+    }
+
+    .streak-milestone-track {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px dashed var(--border-soft);
+        gap: 2px;
+    }
+
+    .milestone-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        flex: 1;
+        min-width: 0;
+        opacity: 0.4;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .milestone-badge.unlocked {
+        opacity: 1;
+        animation: milestonePop 0.5s ease;
+    }
+
+    @keyframes milestonePop {
+        0%   { transform: scale(0.6); }
+        60%  { transform: scale(1.15); }
+        100% { transform: scale(1); }
+    }
+
+    .milestone-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        background: #FFF2E6;
+        border: 1.5px solid var(--border-warm);
+    }
+
+    .milestone-badge.unlocked .milestone-icon {
+        background: linear-gradient(135deg, #FA8C4E, #FFB577);
+        border-color: transparent;
+        box-shadow: 0 4px 10px rgba(250, 140, 78, 0.35);
+    }
+
+    .milestone-day-label {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--text-muted);
+    }
+
+    /* ---------- Workout reminder card ---------- */
+    .workout-nudge-card {
+        background: linear-gradient(135deg, #FFF3E6 0%, #FFFFFF 100%);
+        border: 1.5px solid #F0D5BE;
+        border-radius: 22px;
+        padding: 20px 46px 20px 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        position: relative;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(220, 140, 90, 0.08);
+        animation: nudgeIn 0.5s cubic-bezier(.2,.8,.2,1);
+    }
+
+    @keyframes nudgeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .workout-nudge-figure { width: 64px; height: 64px; flex-shrink: 0; }
+
+    .workout-nudge-figure .stretch-person {
+        transform-box: fill-box;
+        transform-origin: center bottom;
+        animation: stretchBounce 1.4s ease-in-out infinite;
+    }
+
+    @keyframes stretchBounce {
+        0%, 100% { transform: rotate(0deg) translateY(0); }
+        25%      { transform: rotate(-8deg) translateY(-2px); }
+        50%      { transform: rotate(0deg) translateY(0); }
+        75%      { transform: rotate(8deg) translateY(-2px); }
+    }
+
+    .workout-nudge-text { flex: 1; }
+    .workout-nudge-text h4 { font-size: 15px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+    .workout-nudge-text p  { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+
+    .workout-nudge-close {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        background: none;
+        border: none;
+        font-size: 16px;
+        color: #BD987E;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+    }
+    .workout-nudge-close:hover { background: #FFE8D6; }
+
+    @media (max-width: 520px) {
+        .workout-nudge-card { flex-direction: column; text-align: center; padding: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .streak-flame-svg, .streak-flame-glow, .stretch-person,
+        .milestone-badge.unlocked, .workout-nudge-card { animation: none !important; }
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <!-- Left Profile & Quick Stats Sidebar -->
+    <aside class="dashboard-sidebar">
+        <div class="user-card" style="text-align: center;">
+            <div class="avatar" style="margin: 0 auto 12px auto;">
+                {{ user.name[0].upper() if user and user.name else 'U' }}
+            </div>
+            <h3>{{ user.name if user else 'Welcome Back' }}</h3>
+            <p>{{ user.email if user else '' }}</p>
+        </div>
+
+        <div class="stats-box">
+            <div class="stat-item">
+                <span class="stat-num">{{ latest_emotion }}</span>
+                <span class="stat-label">Current State</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">{{ streak }} Days &#128293;</span>
+                <span class="stat-label">Daily Streak</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">{{ total_logs }}</span>
+                <span class="stat-label">AI Assessments</span>
+            </div>
+        </div>
+
+        <!-- ADDED: Animated streak flame + milestone track -->
+        <div class="streak-widget" id="streakWidget" data-streak="{{ streak or 0 }}">
+            <svg width="0" height="0" style="position:absolute;" aria-hidden="true">
+                <defs>
+                    <linearGradient id="streakRainbowGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" stop-color="#FF6B35"/>
+                        <stop offset="50%" stop-color="#FFC93C"/>
+                        <stop offset="100%" stop-color="#FFEE93"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <div class="streak-flame-stage">
+                <div class="streak-flame-glow"></div>
+                <svg class="streak-flame-svg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-label="Streak flame">
+                    <path fill-rule="evenodd" d="M50 10 C30 35 20 55 25 78 C28 95 42 108 50 120 C58 108 72 95 75 78 C80 55 70 35 50 10 Z M50 40 C58 55 62 68 58 80 C56 88 50 95 50 95 C50 95 44 88 42 80 C38 68 42 55 50 40 Z"/>
+                </svg>
+            </div>
+
+            <div class="streak-number">{{ streak or 0 }}</div>
+            <div class="streak-label" id="streakLabelText">day streak</div>
+            <div class="streak-next-hint" id="streakNextHint" style="display: none;"></div>
+
+            <div class="streak-milestone-track" id="streakMilestoneTrack"></div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
+            <a href="{{ url_for('home') }}#assessment-section" class="btn-pill-orange" style="text-align: center; text-decoration: none;">
+                + New Emotion Check-in
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn-pill btn-secondary" style="text-align: center; text-decoration: none;">
+                Log Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Wellness Analytics Area -->
+    <section class="dashboard-main">
+
+        <!-- ADDED: Missing workout / exercise reminder card -->
+        {% if workout_reminder and workout_reminder.show %}
+        <div class="workout-nudge-card" id="workoutNudgeCard">
+            <button type="button" class="workout-nudge-close" onclick="dismissWorkoutNudge()" aria-label="Dismiss reminder">&#10005;</button>
+
+            <div class="workout-nudge-figure">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <g class="stretch-person">
+                        <circle cx="50" cy="26" r="12" fill="#F5C9A6"/>
+                        <rect x="44" y="37" width="12" height="28" rx="6" fill="#FA8C4E"/>
+                        <rect x="30" y="38" width="10" height="34" rx="5" fill="#FA8C4E" transform="rotate(-35 35 38)"/>
+                        <rect x="60" y="38" width="10" height="34" rx="5" fill="#FA8C4E" transform="rotate(35 65 38)"/>
+                        <rect x="40" y="63" width="9" height="26" rx="4" fill="#332014"/>
+                        <rect x="51" y="63" width="9" height="26" rx="4" fill="#332014"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="workout-nudge-text">
+                <h4>Time to move a little &#127939;</h4>
+                <p>
+                    {% if workout_reminder.has_ever_logged %}
+                        It's been {{ workout_reminder.days_missed }} days since your last wellness activity. Even 2 minutes helps reset your energy.
+                    {% else %}
+                        You haven't tried a wellness activity yet &mdash; a quick breathing or movement routine is a great place to start.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('home') }}#assessment-section" class="btn-pill-orange" style="font-size: 12px; padding: 8px 20px; text-decoration: none;">
+                    Try a quick routine &rarr;
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 3-Question Framework Banner -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div class="metric-card" style="border-left-color: #059669;">
+                <span class="metric-label">1. How Am I Feeling?</span>
+                <span class="metric-val" style="font-size: 22px; margin-top: 4px;">{{ latest_emotion }}</span>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Latest LSTM assessment</p>
+            </div>
+            <div class="metric-card" style="border-left-color: #FA8C4E;">
+                <span class="metric-label">2. What Can I Do?</span>
+                <span class="metric-val" style="font-size: 18px; margin-top: 4px;">4-4-4 Box Breathing</span>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Somatic regulation reset</p>
+            </div>
+            <div class="metric-card" style="border-left-color: #8B5CF6;">
+                <span class="metric-label">3. How Am I Progressing?</span>
+                <span class="metric-val" style="font-size: 22px; margin-top: 4px;">{{ streak }} Day Streak</span>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Consistent reflection</p>
+            </div>
+        </div>
+
+        <!-- Emotion Trajectory Flow -->
+        <div class="chart-card">
+            <h3>Recent Emotion Progression Flow</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Your chronological emotional states:</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                {% if history %}
+                    {% for h in history[:6] %}
+                        <span class="emotion-tag mood-{{ h.predicted_emotion.lower() }}" style="font-size: 12px; padding: 6px 14px;">
+                            {{ h.predicted_emotion.capitalize() }} ({{ h.confidence_score }}%)
+                        </span>
+                        {% if not loop.last %}<span style="color: #BD987E; font-weight: bold;">&rarr;</span>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 13px; color: var(--text-muted);">
+                        No check-ins recorded yet. <a href="{{ url_for('home') }}#assessment-section" style="color: var(--orange-primary); font-weight: 700;">Take your first assessment on the home page!</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 7-Day Trend Chart -->
+        <!-- Data passed safely via data-attributes to prevent JS linter red underlines -->
+        <div class="chart-card" 
+             id="chartDataContainer"
+             data-labels='{{ (trend_labels or ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]) | tojson }}'
+             data-counts='{{ (trend_counts or [0, 0, 0, 0, 0, 0, 0]) | tojson }}'>
+            <h3>7-Day Check-in Consistency</h3>
+            <div style="height: 240px; position: relative; margin-top: 14px;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Personal History Table -->
+        <div class="history-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>My Personal Emotion History &amp; Confidence Log</h3>
+                <span class="badge-mini" style="background: #DCFCE7; color: #16A34A;">&#128274; Encrypted &amp; Private</span>
+            </div>
+            {% if history %}
+            <div style="overflow-x: auto;">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Your Reflection Text</th>
+                            <th>Detected Emotion</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in history %}
+                        <tr>
+                            <td style="white-space: nowrap;">{{ h.timestamp.strftime('%b %d, %I:%M %p') }}</td>
+                            <td>&ldquo;{{ h.input_text }}&rdquo;</td>
+                            <td><span class="emotion-tag mood-{{ h.predicted_emotion.lower() }}">{{ h.predicted_emotion.upper() }}</span></td>
+                            <td><strong>{{ h.confidence_score }}%</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">No assessment records found yet.</p>
+            {% endif %}
+        </div>
+
+    </section>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById("trendChart");
+    var container = document.getElementById("chartDataContainer");
+
+    if (ctx && container) {
+        var labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        var counts = [0, 0, 0, 0, 0, 0, 0];
+
+        try {
+            labels = JSON.parse(container.getAttribute("data-labels"));
+            counts = JSON.parse(container.getAttribute("data-counts"));
+        } catch (err) {
+            console.warn("Using fallback chart dataset:", err);
+        }
+
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Check-ins Completed",
+                    data: counts,
+                    borderColor: "#FA8C4E",
+                    backgroundColor: "rgba(250, 140, 78, 0.15)",
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: "#FA8C4E",
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, color: "#7C5E47" },
+                        grid: { color: "#F6DBC3" }
+                    },
+                    x: {
+                        ticks: { color: "#7C5E47" },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<!-- ADDED: streak flame logic + reminder dismiss logic -->
+<script>
+(function () {
+    var widget = document.getElementById("streakWidget");
+    if (!widget) return;
+
+    var streak = parseInt(widget.getAttribute("data-streak"), 10) || 0;
+    var label = document.getElementById("streakLabelText");
+    var hint = document.getElementById("streakNextHint");
+    var track = document.getElementById("streakMilestoneTrack");
+
+    var tier = 0;
+    if (streak >= 30) tier = 5;
+    else if (streak >= 14) tier = 4;
+    else if (streak >= 7) tier = 3;
+    else if (streak >= 3) tier = 2;
+    else if (streak >= 1) tier = 1;
+    widget.classList.add("tier-" + tier);
+
+    if (streak === 0) label.innerText = "Start your streak today";
+    else if (streak === 1) label.innerText = "day streak \u2014 nice start!";
+    else if (tier === 5) label.innerText = "day streak \uD83D\uDC51 legendary!";
+    else label.innerText = "day streak";
+
+    var milestones = [
+        { day: 3,   icon: "\uD83C\uDF31" },
+        { day: 7,   icon: "\uD83D\uDD25" },
+        { day: 14,  icon: "\u2B50" },
+        { day: 30,  icon: "\uD83D\uDC8E" },
+        { day: 60,  icon: "\uD83C\uDFC6" },
+        { day: 100, icon: "\uD83D\uDC51" }
+    ];
+
+    var html = "";
+    var next = null;
+    milestones.forEach(function (m) {
+        var unlocked = streak >= m.day;
+        if (!unlocked && next === null) next = m.day;
+        html += '<div class="milestone-badge' + (unlocked ? ' unlocked' : '') + '">' +
+                '<div class="milestone-icon">' + (unlocked ? m.icon : "\uD83D\uDD12") + '</div>' +
+                '<span class="milestone-day-label">' + m.day + 'd</span></div>';
+    });
+    track.innerHTML = html;
+
+    if (next !== null) {
+        var left = next - streak;
+        hint.innerText = left + (left === 1 ? " day" : " days") + " to next badge";
+        hint.style.display = "inline-block";
+    }
+})();
+
+function dismissWorkoutNudge() {
+    var card = document.getElementById("workoutNudgeCard");
+    var key = "workout_nudge_dismissed_" + new Date().toISOString().slice(0, 10);
+    try { localStorage.setItem(key, "1"); } catch (e) {}
+    if (card) {
+        card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+        card.style.opacity = "0";
+        card.style.transform = "translateY(-8px)";
+        setTimeout(function () { card.remove(); }, 300);
+    }
+}
+
+(function () {
+    var key = "workout_nudge_dismissed_" + new Date().toISOString().slice(0, 10);
+    try {
+        if (localStorage.getItem(key) === "1") {
+            var card = document.getElementById("workoutNudgeCard");
+            if (card) card.remove();
+        }
+    } catch (e) {}
+})();
+</script>
+{% endblock %}

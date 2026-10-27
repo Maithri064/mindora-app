@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+{% block title %}Mindora Mental Wellness & Scenario Insights{% endblock %}
+
+{% block content %}
+<div class="warm-page-container">
+    <header class="quiz-hero-header" style="max-width: 900px; margin: 36px auto 26px auto; text-align: center; padding: 0 20px;">
+        <h1 style="font-size: 40px; font-weight: 800; color: #332014; margin-bottom: 12px;">Mental Wellness & Real-Life Insights</h1>
+        <p style="font-size: 15px; color: #7C5E47; line-height: 1.6;">Gentle insights, self-care routines, and psychological research translated into practical strategies for everyday mental well-being.</p>
+    </header>
+
+    <!-- Auto-Generated Daily Wellness Article (updates every day, no paid API) -->
+<section style="max-width: 1200px; margin: 0 auto 34px auto; padding: 0 24px;">
+    <div id="dailyArticleCard"
+         style="background: linear-gradient(135deg, #FFF3E6, #FFFFFF); border: 1.5px solid #F0D5BE;
+                border-radius: 20px; padding: 26px 28px; cursor: pointer;
+                box-shadow: 0 8px 24px rgba(180,100,50,0.08); transition: transform .25s ease;"
+         onclick="openDailyArticleModal()">
+        <span style="font-size:11px; font-weight:800; color:#E27236; background:#FFE8D6;
+                     padding:4px 12px; border-radius:50px;">📅 TODAY'S WELLNESS INSIGHT</span>
+        <h3 id="dailyArticleTitle" style="font-size:20px; font-weight:800; color:#332014; margin:10px 0 6px 0;">
+            Loading today's article...
+        </h3>
+        <p id="dailyArticleWeather" style="font-size:13px; color:#7C5E47; margin-bottom:6px;"></p>
+        <span style="font-size:13px; font-weight:800; color:#E27236;">Read Today's Insight →</span>
+    </div>
+</section>
+
+    <!-- 6 Editorial Photo Blog Cards Grid -->
+    <section class="blogs-grid-showcase">
+        
+        <!-- Card 1: Academic Burnout -->
+        <article class="tech-blog-card" onclick="openBlogModal('scenario_burnout')">
+            <div class="card-photo-wrapper">
+                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80" alt="Student studying under pressure">
+                <span class="floating-pill-badge">Academic Pressure</span>
+            </div>
+            <div class="card-content-wrapper">
+                <div>
+                    <h3>The Night Before the Big Deadline: Breaking Panic Loops</h3>
+                    <div class="card-author-meta">
+                        <span>👤 Mindora Research</span>
+                        <span>📅 Sep 17, 2026</span>
+                    </div>
+                    <p class="card-snippet">When you have multiple submissions due and your chest feels tight, here is how to de-escalate amygdala panic in 5 minutes...</p>
+                </div>
+                <span class="card-continue-link">Continue Reading →</span>
+            </div>
+        </article>
+
+        <!-- Card 2: Relationship Silence -->
+        <article class="tech-blog-card" onclick="openBlogModal('scenario_conflict')">
+            <div class="card-photo-wrapper">
+                <img src="https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?auto=format&fit=crop&w=800&q=80" alt="Person checking phone in thought">
+                <span class="floating-pill-badge">Relationships</span>
+            </div>
+            <div class="card-content-wrapper">
+                <div>
+                    <h3>Left on Read: Rejection Sensitivity &amp; Overthinking</h3>
+                    <div class="card-author-meta">
+                        <span>👤 Clinical Team</span>
+                        <span>📅 Sep 12, 2026</span>
+                    </div>
+                    <p class="card-snippet">A partner or friend stopped texting after a disagreement. Learn why the anxious brain fills silence with worst-case scenarios...</p>
+                </div>
+                <span class="card-continue-link">Continue Reading →</span>
+            </div>
+        </article>
+
+        <!-- Card 3: Imposter Syndrome -->
+        <article class="tech-blog-card" onclick="openBlogModal('scenario_imposter')">
+            <div class="card-photo-wrapper">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Team collaborating in a modern office">
+                <span class="floating-pill-badge">Career &amp; Growth</span>
+            </div>
+            <div class="card-content-wrapper">
+                <div>
+                    <h3>"Everyone Else Belongs Here Except Me": Quieting Fraud Fear</h3>
+                    <div class="card-author-meta">
+                        <span>👤 Mindora Psychology</span>
+                        <span>📅 Aug 29, 2026</span>
+                    </div>
+                    <p class="card-snippet">Sitting in meetings terrified you'll be exposed? Here is how to distinguish between genuine knowledge gaps and imposter distortion...</p>
+                </div>
+                <span class="card-continue-link">Continue Reading →</span>
+            </div>
+        </article>
+
+        <!-- Card 4: Insomnia & Restlessness -->
+        <article class="tech-blog-card" onclick="openBlogModal('scenario_insomnia')">
+            <div class="card-photo-wrapper">
+                <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80" alt="Person resting peacefully in bedroom">
+                <span class="floating-pill-badge">Sleep &amp; Rest</span>
+            </div>
+            <div class="card-content-wrapper">
+                <div>
+                    <h3>It's 2:30 AM and Your Mind Won't Shut Off: Somatic Off-Ramps</h3>
+                    <div class="card-author-meta">
+                        <span>👤 Somatic Health</span>
+                        <span>📅 Aug 19, 2026</span>
+                    </div>
+                    <p class="card-snippet">Watching the clock calculate lost sleep only reinforces hyper-arousal. Learn the 20-minute ejection rule and theta soundscapes...</p>
+                </div>
+                <span class="card-continue-link">Continue Reading →</span>
+            </div>
+        </article>
+
+        <!-- Card 5: Social Media Comparison -->
+        <article class="tech-blog-card" onclick="openBlogModal('scenario_comparison')">
+            <div class="card-photo-wrapper">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" alt="Calm abstract reflection art">
+                <span class="floating-pill-badge">Digital Wellness</span>
+            </div>
+            <div class="card-content-wrapper">
+                <div>
+                    <h3>The Doom-Scroll Hole: Feeling Left Behind by Everyone</h3>
+                    <div class="card-author-meta">
+                        <span>👤 Digital Wellness</span>
+                        <span>📅 Aug 14, 2026</span>
+                    </div>
+                    <p class="card-snippet">How algorithmic highlight reels trigger social defeat syndrome, and 3 tactile grounding habits to instantly restore equilibrium...</p>
+                </div>
+                <span class="card-continue-link">Continue Reading →</span>
+            </div>
+        </article>
+
+        <!-- Card 6: Emotional Shock & Grief -->
+        <article class="tech-blog-card" onclick="openBlogModal('scenario_grief')">
+            <div class="card-photo-wrapper">
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Gentle ocean waves on serene beach">
+                <span class="floating-pill-badge">Crisis Resilience</span>
+            </div>
+            <div class="card-content-wrapper">
+                <div>
+                    <h3>When Bad News Hits Suddenly: Surviving the First 24 Hours</h3>
+                    <div class="card-author-meta">
+                        <span>👤 Crisis Support</span>
+                        <span>📅 Aug 02, 2026</span>
+                    </div>
+                    <p class="card-snippet">Acute shock acts as your nervous system's emotional airbag. What to prioritize and what to consciously avoid in the immediate aftermath...</p>
+                </div>
+                <span class="card-continue-link">Continue Reading →</span>
+            </div>
+        </article>
+    </section>
+
+    <!-- Bottom Therapy Suggestion Banner -->
+    <section class="therapy-ideas-section">
+        <div class="therapy-ideas-header">
+            <h2 class="therapy-ideas-title">Sometimes you're not ready to talk.</h2>
+            <h3 class="therapy-ideas-sub">That's Okay :)</h3>
+            <p class="therapy-ideas-lead">Explore gentle reflections, mindful ambient audio, or self-guided breathwork whenever you feel ready.</p>
+        </div>
+        <div class="therapy-cards-row">
+            <a href="{{ url_for('quiz_home') }}" class="therapy-item-card" style="text-decoration: none; color: inherit; display: block;">
+                <div class="therapy-item-thumb bg-teal-soft">
+                    <span>🎧 🧘</span>
+                </div>
+                <h4>Explore Self-Discovery Quizzes</h4>
+                <p>Understand your emotional patterns in a safe, private space.</p>
+            </a>
+            <a href="{{ url_for('write_story') }}" class="therapy-item-card" style="text-decoration: none; color: inherit; display: block;">
+                <div class="therapy-item-thumb bg-rose-soft">
+                    <span>🌱 📖</span>
+                </div>
+                <h4>Write Anonymously</h4>
+                <p>Externalize your thoughts without needing to say them out loud.</p>
+            </a>
+        </div>
+    </section>
+</div>
+
+<!-- Modal for Reading Full Scenario Articles -->
+<div id="blogModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="max-width: 650px;">
+        <div class="modal-header">
+            <div>
+                <span id="blogModalTag" class="modal-badge">Scenario Analysis</span>
+                <h3 id="blogModalTitle" style="font-size: 22px; margin-top: 6px; color: #332014;">Article Title</h3>
+            </div>
+            <button onclick="closeBlogModal()" class="close-btn" type="button">✕</button>
+        </div>
+        <div class="modal-body" id="blogModalBody" style="font-size: 14.5px; line-height: 1.75; color: #4A3323; margin-top: 14px;"></div>
+        <div class="modal-footer" style="margin-top: 24px; text-align: right;">
+            <button onclick="closeBlogModal()" class="btn-pill btn-primary" type="button">Close Scenario</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const BLOG_ARTICLES = {
+    scenario_burnout: {
+        tag: "Scenario 1: Academic Pressure",
+        title: "The Night Before the Big Deadline: Breaking Panic Loops",
+        content: `
+            <p><strong>The Real-Life Scene:</strong> It's 11:00 PM. You have two final submissions due tomorrow morning. Instead of typing, your heart is pounding at 110 BPM, your chest feels constricted, and your brain is frozen in cognitive paralysis. Every minute that ticks by on the clock feels like an accusation.</p>
+            <h4 style="margin-top: 14px; color: #332014;">Why Your Brain Does This:</h4>
+            <p>Your amygdala has perceived impending academic failure as a survival emergency. It floods your system with cortisol and adrenaline. The prefrontal cortex (responsible for logical sentence writing) goes offline in favor of fight-or-flight.</p>
+            <h4 style="margin-top: 14px; color: #332014;">The 3-Step Protocol:</h4>
+            <ul style="padding-left: 20px; margin-top: 6px;">
+                <li><strong>The Physiological Sigh:</strong> Take two rapid sniffs through your nose, then one long slow exhale through your mouth. Do this 3 times to mechanically slow your heart rate.</li>
+                <li><strong>Deconstruct into 'Stupidly Small' Steps:</strong> Don't try to "write the whole chapter." Tell yourself: <em>'I will only open the Google Doc and write two sentences.'</em> Action lowers anxiety.</li>
+                <li><strong>Set a 20-Minute Timer:</strong> Work uninterrupted for just 20 minutes, then permit yourself 3 minutes to drink cold water.</li>
+            </ul>
+        `
+    },
+    scenario_conflict: {
+        tag: "Scenario 2: Relationships",
+        title: "Left on Read: Navigating Rejection Sensitivity & Overthinking",
+        content: `
+            <p><strong>The Real-Life Scene:</strong> You sent an honest, vulnerable text message to someone you care about 5 hours ago. You see the two blue ticks or 'Read' timestamp, but no reply. By 8:00 PM, you have reread the conversation 12 times, convinced they secretly resent you or that the connection is permanently ruined.</p>
+            <h4 style="margin-top: 14px; color: #332014;">The Psychological Trap:</h4>
+            <p>This is known as <em>Catastrophic Mind Reading</em>. Human minds crave narrative closure; in the absence of data, an anxious brain fills the silence with worst-case projections.</p>
+            <h4 style="margin-top: 14px; color: #332014;">The Coping Boundary:</h4>
+            <ul style="padding-left: 20px; margin-top: 6px;">
+                <li><strong>Separate Fact from Projection:</strong> The only confirmed fact is: <em>'They haven't texted back yet.'</em> Everything else ('They hate me') is an unverified theory.</li>
+                <li><strong>Implement the 24-Hour Rule:</strong> Resist the urge to double-text in panic. Put your phone in another room and give both parties space to breathe.</li>
+                <li><strong>Grounding Affirmation:</strong> <em>'My worth and peace do not depend on the instant response time of another person.'</em></li>
+            </ul>
+        `
+    },
+    scenario_imposter: {
+        tag: "Scenario 3: Career & Growth",
+        title: "\"Everyone Else Belongs Here Except Me\": Quieting Fraud Fear",
+        content: `
+            <p><strong>The Real-Life Scene:</strong> You just started a new software internship, graduate program, or project team. During a standup meeting, teammates use technical jargon effortlessly. You sit silently, nodding along, terrified that asking a basic question will prove you were an admission mistake.</p>
+            <h4 style="margin-top: 14px; color: #332014;">The Hidden Reality:</h4>
+            <p>Studies show over 70% of high-achieving young adults experience Imposter Syndrome. You compare your messy, insecure internal thoughts to everyone else's carefully curated external confidence.</p>
+            <h4 style="margin-top: 14px; color: #332014;">Actionable Reframing:</h4>
+            <ul style="padding-left: 20px; margin-top: 6px;">
+                <li><strong>Reframe 'Not Knowing' as Learning:</strong> Change <em>'I don't know this, I'm dumb'</em> to <em>'I haven't encountered this tool yet, which is why I'm here.'</em></li>
+                <li><strong>Keep a "Brag Sheet":</strong> Write down 3 difficult challenges you conquered in the past year. Evidence silences self-doubt.</li>
+            </ul>
+        `
+    },
+    scenario_insomnia: {
+        tag: "Scenario 4: Sleep & Rest",
+        title: "It's 2:30 AM and Your Mind Won't Shut Off: Somatic Off-Ramps",
+        content: `
+            <p><strong>The Real-Life Scene:</strong> You turned the lights off at 11:30 PM. Now it's 2:30 AM. You keep watching the clock calculate how few hours of sleep you have left: <em>'If I fall asleep now, I get 4 hours... now 3.5 hours...'</em></p>
+            <h4 style="margin-top: 14px; color: #332014;">The Sleep Stimulus Error:</h4>
+            <p>Tossing and turning in bed conditions your brain to associate the mattress with anxiety rather than rest.</p>
+            <h4 style="margin-top: 14px; color: #332014;">The Reset Protocol:</h4>
+            <ul style="padding-left: 20px; margin-top: 6px;">
+                <li><strong>The 20-Minute Ejection Rule:</strong> If awake for more than 20 minutes, get out of bed. Sit in dim lighting on a chair and read a non-work paper book until your eyelids get heavy.</li>
+                <li><strong>Turn All Clocks Away:</strong> Looking at the time activates executive alarm circuits.</li>
+                <li><strong>Play Theta Ambient Sounds:</strong> Turn on Mindora's steady rainfall audio at low volume to give racing thoughts a neutral frequency to settle upon.</li>
+            </ul>
+        `
+    },
+    scenario_comparison: {
+        tag: "Scenario 5: Digital Wellness",
+        title: "The Doom-Scroll Hole: Feeling Left Behind by Everyone",
+        content: `
+            <p><strong>The Real-Life Scene:</strong> On a quiet Sunday evening alone in your room, you open social media. Friend A is in Europe, Friend B bought a new car, and Friend C got a promotion. Suddenly, your quiet Sunday feels like total failure.</p>
+            <h4 style="margin-top: 14px; color: #332014;">Understanding the Feed:</h4>
+            <p>Social media algorithms reward hyper-stylized highlights. You are comparing your unedited behind-the-scenes life to other people's highlight reels.</p>
+            <h4 style="margin-top: 14px; color: #332014;">Immediate Detox Ritual:</h4>
+            <ul style="padding-left: 20px; margin-top: 6px;">
+                <li><strong>Physical Touchpoint:</strong> Put down the phone, walk into the kitchen, drink a warm cup of tea, and feel the solid floor under your feet.</li>
+                <li><strong>The 3-Item Micro-Gratitude:</strong> Name 3 small, non-glamorous privileges you have right now (a warm bed, a working laptop, your favorite food).</li>
+            </ul>
+        `
+    },
+    scenario_grief: {
+        tag: "Scenario 6: Crisis Resilience",
+        title: "When Bad News Hits Suddenly: Surviving the First 24 Hours",
+        content: `
+            <p><strong>The Real-Life Scene:</strong> You receive sudden devastating news—a harsh breakup, the passing of a family member, or sudden loss of employment. You feel detached, as if watching yourself from above, accompanied by waves of nausea.</p>
+            <h4 style="margin-top: 14px; color: #332014;">Acute Shock Response:</h4>
+            <p>Numbness and shock are your nervous system's built-in airbags. They prevent emotional overload from overwhelming you all at once.</p>
+            <h4 style="margin-top: 14px; color: #332014;">Survival Priorities:</h4>
+            <ul style="padding-left: 20px; margin-top: 6px;">
+                <li><strong>No Big Decisions Today:</strong> For the first 24–48 hours, make zero major life decisions. Just eat, drink fluids, and rest.</li>
+                <li><strong>Anchor in 1 Safe Person:</strong> Call one person and say simply: <em>'I received heavy news today. I don't need advice, I just need you to know where I am.'</em></li>
+            </ul>
+        `
+    }
+};
+
+function openBlogModal(key) {
+    const article = BLOG_ARTICLES[key];
+    if (!article) return;
+    document.getElementById("blogModalTag").innerText = article.tag;
+    document.getElementById("blogModalTitle").innerText = article.title;
+    document.getElementById("blogModalBody").innerHTML = article.content;
+    document.getElementById("blogModal").style.display = "flex";
+}
+
+function closeBlogModal() {
+    document.getElementById("blogModal").style.display = "none";
+}
+</script>
+<script>
+let DAILY_ARTICLE_CACHE = null;
+
+async function loadDailyArticle() {
+    try {
+        const res = await fetch("/api/daily-article");
+        const data = await res.json();
+        DAILY_ARTICLE_CACHE = data;
+        document.getElementById("dailyArticleTitle").innerText = data.title;
+        document.getElementById("dailyArticleWeather").innerText = data.weather_line || data.date_label;
+    } catch (err) {
+        document.getElementById("dailyArticleTitle").innerText = "Today's Wellness Insight";
+    }
+}
+
+function openDailyArticleModal() {
+    if (!DAILY_ARTICLE_CACHE) return;
+    document.getElementById("blogModalTag").innerText = DAILY_ARTICLE_CACHE.tag;
+    document.getElementById("blogModalTitle").innerText = DAILY_ARTICLE_CACHE.title;
+    document.getElementById("blogModalBody").innerHTML = DAILY_ARTICLE_CACHE.content;
+    document.getElementById("blogModal").style.display = "flex";
+}
+
+document.addEventListener("DOMContentLoaded", loadDailyArticle);
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}About Us | Mindora Mental Wellness{% endblock %}
+
+{% block content %}
+<div class="about-page-container">
+
+    <!-- Top Photographic Zen Sunset Banner -->
+    <section class="about-zen-hero">
+        <div class="about-zen-hero-content">
+            <h1 class="about-main-title">About Us</h1>
+        </div>
+    </section>
+
+    <!-- White Mission Card Overlapping the Picture -->
+    <div class="about-card-overlap-wrapper">
+        <article class="about-mission-card">
+            <h2 class="about-mission-heading">Our Mission</h2>
+            
+            <div class="about-mission-body">
+                <p>
+                    At Mindora we believe in creating a supportive community where mental and emotional well-being is practiced daily. Our team meticulously curates quality content and evidence-based self-care tools with information structured to reflect the latest research in the mental health and cognitive wellness field.
+                </p>
+                <p>
+                    Our content and prescriptive coping routines are crafted by skilled writers and grounded in clinical psychology principles. We pair psychological insights with custom Bidirectional LSTM deep learning NLP emotion classification, guaranteeing that every reflective check-in provides thoughtful, personalized, and accurate support for your most pressing emotional questions.
+                </p>
+                <p>
+                    We understand the importance of staying current and accessible. That's why the Mindora team is dedicated to providing comprehensive, unbiased, and confidential guidance you can trust. We continuously refine our emotion classification models and therapeutic audio exercises whenever new clinical findings become available, ensuring you always have access to the most reliable self-care tools possible.
+                </p>
+                <p>
+                    Mindora is more than just a website; we aim to build a compassionate sanctuary where you can find peace, track your personal resilience, and feel supported. We encourage open reflection and hope to foster an environment where young adults and students can connect, de-escalate stress, and thrive together.
+                </p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Therapy Ideas Suggestion Section -->
+    <section class="therapy-ideas-section">
+        <div class="therapy-ideas-header">
+            <h2 class="therapy-ideas-title">Sometimes you're not ready to talk.</h2>
+            <h3 class="therapy-ideas-sub">That's Okay :)</h3>
+            <p class="therapy-ideas-lead">Read more from our blog or try quiet activities -</p>
+        </div>
+
+        <div class="therapy-cards-row">
+            <a href="{{ url_for('blogs') }}" class="therapy-item-card" style="text-decoration: none; color: inherit; display: block;">
+                <div class="therapy-item-thumb bg-sky-soft">
+                    <span>🧩 🌤️</span>
+                </div>
+                <h4>Mindful Micro-Breaks</h4>
+                <p>Gentle solitary moments to reset when words feel too heavy.</p>
+            </a>
+
+            <a href="{{ url_for('quiz_home') }}" class="therapy-item-card" style="text-decoration: none; color: inherit; display: block;">
+                <div class="therapy-item-thumb bg-teal-soft">
+                    <span>🎧 🧘</span>
+                </div>
+                <h4>Self-Guided Discovery</h4>
+                <p>Understand your emotional patterns in a safe, private space.</p>
+            </a>
+
+            <a href="{{ url_for('write_story') }}" class="therapy-item-card" style="text-decoration: none; color: inherit; display: block;">
+                <div class="therapy-item-thumb bg-rose-soft">
+                    <span>🌱 📖</span>
+                </div>
+                <h4>Quiet Expression</h4>
+                <p>Write your thoughts freely without needing to speak them out loud.</p>
+            </a>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
